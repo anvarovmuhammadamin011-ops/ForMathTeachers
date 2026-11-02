@@ -1,0 +1,34 @@
+{
+  "name": "mathtest-ai",
+  "version": "1.0.0",
+  "private": true,
+  "description": "MathTest AI — PDF matematika savollarini AI yordamida interaktiv testga aylantiruvchi platforma",
+  "workspaces": [
+    "server",
+    "client"
+  ],
+  "scripts": {
+    "dev": "concurrently -n db,server,client -c magenta,blue,green \"npm run db:up\" \"npm run dev -w server\" \"npm run dev -w client\"",
+    "dev:app": "concurrently -n server,client -c blue,green \"npm run dev -w server\" \"npm run dev -w client\"",
+    "db:up": "npm run db:up -w server",
+    "db:setup": "npm run db:setup -w server",
+    "build": "npm run build -w server && npm run build -w client",
+    "start": "npm run start -w server",
+    "typecheck": "npm run typecheck -w server && npm run typecheck -w client",
+    "seed": "npm run seed -w server",
+    "e2e": "npm run e2e -w server"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  },
+  "allowScripts": {
+    "@embedded-postgres/windows-x64@18.1.0-beta.16": true,
+    "@prisma/client@6.19.3": true,
+    "@prisma/engines@6.19.3": true,
+    "canvas@3.1.0": true,
+    "esbuild@0.28.2": true,
+    "esbuild@0.25.12": true,
+    "prisma@6.19.3": true,
+    "tesseract.js@5.1.1": true
+  }
+}
