@@ -77,7 +77,7 @@ Manzillar:
 | O‘qituvchi | `oqituvchi` | `teacher123` |
 | O‘quvchi | `oquvchi` | `student123` |
 
-Demo sinf qo‘shilish kodi: **`8A2026`**. Demo test AI konvertatsiyasini taqlid qilmaydi — u real bazaga yoziladi va AI kaliti bo‘lmaganda ham o‘quvchi oqimini sinash uchun xizmat qiladi.
+Demo sinf qo‘shilish kodi: **`8A2026`**. Demo test AI konvertatsiyasini taqlid qilmaydi — u real bazaga yoziladi va AI kaliti bo‘lmaganda ham o‘quvchi oqimini sinash uchun xizmat qiladi. Kirish sahifasida o‘qituvchi va o‘quvchi uchun bir bosishli **demo kirish** tugmalari mavjud.
 
 ---
 

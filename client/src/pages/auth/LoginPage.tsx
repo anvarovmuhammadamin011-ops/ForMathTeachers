@@ -1,6 +1,14 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { AlertCircle, Eye, EyeOff, GraduationCap, LogIn, School } from 'lucide-react';
+import {
+  AlertCircle,
+  Eye,
+  EyeOff,
+  GraduationCap,
+  Loader2,
+  LogIn,
+  School,
+} from 'lucide-react';
 import { AuthLayout } from './AuthLayout';
 import { Button } from '@/components/ui/button';
 import { Field, Input } from '@/components/ui/input';
@@ -16,10 +24,17 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [demoLoading, setDemoLoading] = useState<'TEACHER' | 'STUDENT' | null>(null);
 
   useEffect(() => {
     if (user) navigate(user.role === 'TEACHER' ? '/teacher' : '/student', { replace: true });
   }, [user, navigate]);
+
+  function redirectAfterLogin(role: 'TEACHER' | 'STUDENT') {
+    const from = (location.state as { from?: string } | null)?.from;
+    const target = role === 'TEACHER' ? '/teacher' : '/student';
+    navigate(from && from.startsWith(target) ? from : target, { replace: true });
+  }
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
@@ -31,13 +46,33 @@ export default function LoginPage() {
     setLoading(true);
     try {
       const loggedIn = await login(username.trim(), password);
-      const from = (location.state as { from?: string } | null)?.from;
-      const target = loggedIn.role === 'TEACHER' ? '/teacher' : '/student';
-      navigate(from && from.startsWith(target) ? from : target, { replace: true });
+      redirectAfterLogin(loggedIn.role);
     } catch (err) {
       setError(errorMessage(err));
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function handleDemoLogin(role: 'TEACHER' | 'STUDENT') {
+    if (loading || demoLoading) return;
+    const demo =
+      role === 'TEACHER'
+        ? { username: 'oqituvchi', password: 'teacher123' }
+        : { username: 'oquvchi', password: 'student123' };
+    setError('');
+    setUsername(demo.username);
+    setPassword(demo.password);
+    setDemoLoading(role);
+    try {
+      const loggedIn = await login(demo.username, demo.password);
+      redirectAfterLogin(loggedIn.role);
+    } catch (err) {
+      setError(
+        `${errorMessage(err)} Demo hisoblar mavjud emas — serverda "npm run seed" buyrug‘ini ishga tushiring.`,
+      );
+    } finally {
+      setDemoLoading(null);
     }
   }
 
@@ -110,41 +145,54 @@ export default function LoginPage() {
         </Button>
       </form>
 
-      {import.meta.env.DEV && (
-        <div className="mt-5 rounded-xl border border-border bg-soft/60 p-3.5">
-          <p className="text-xs font-semibold text-primary-700">Demo hisoblar (seed qilingan)</p>
-          <div className="mt-2 grid gap-2 sm:grid-cols-2">
-            <button
-              type="button"
-              onClick={() => {
-                setUsername('oqituvchi');
-                setPassword('teacher123');
-              }}
-              className="flex items-center gap-2 rounded-lg border border-border bg-white px-2.5 py-2 text-left text-xs transition hover:border-primary/40"
-            >
-              <School className="h-4 w-4 text-primary" />
-              <span>
-                <span className="block font-semibold text-foreground">O‘qituvchi</span>
-                <span className="text-muted-foreground">oqituvchi / teacher123</span>
-              </span>
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setUsername('oquvchi');
-                setPassword('student123');
-              }}
-              className="flex items-center gap-2 rounded-lg border border-border bg-white px-2.5 py-2 text-left text-xs transition hover:border-primary/40"
-            >
-              <GraduationCap className="h-4 w-4 text-primary" />
-              <span>
-                <span className="block font-semibold text-foreground">O‘quvchi</span>
-                <span className="text-muted-foreground">oquvchi / student123</span>
-              </span>
-            </button>
-          </div>
+      <div className="mt-5 rounded-xl border border-border bg-soft/60 p-3.5">
+        <div className="flex items-center justify-between gap-2">
+          <p className="text-xs font-semibold text-primary-700">Demo hisoblar</p>
+          <span className="rounded-full bg-white px-2 py-0.5 text-[10px] font-semibold text-muted-foreground">
+            Bir bosishda kirish
+          </span>
         </div>
-      )}
+        <div className="mt-2 grid gap-2 sm:grid-cols-2">
+          <button
+            type="button"
+            onClick={() => void handleDemoLogin('TEACHER')}
+            disabled={loading || demoLoading !== null}
+            className="flex items-center gap-2 rounded-lg border border-border bg-white px-2.5 py-2 text-left text-xs transition hover:border-primary/40 disabled:pointer-events-none disabled:opacity-60"
+          >
+            {demoLoading === 'TEACHER' ? (
+              <Loader2 className="h-4 w-4 animate-spin text-primary" />
+            ) : (
+              <School className="h-4 w-4 text-primary" />
+            )}
+            <span>
+              <span className="block font-semibold text-foreground">
+                Matematika o‘qituvchisi
+              </span>
+              <span className="text-muted-foreground">oqituvchi / teacher123</span>
+            </span>
+          </button>
+          <button
+            type="button"
+            onClick={() => void handleDemoLogin('STUDENT')}
+            disabled={loading || demoLoading !== null}
+            className="flex items-center gap-2 rounded-lg border border-border bg-white px-2.5 py-2 text-left text-xs transition hover:border-primary/40 disabled:pointer-events-none disabled:opacity-60"
+          >
+            {demoLoading === 'STUDENT' ? (
+              <Loader2 className="h-4 w-4 animate-spin text-primary" />
+            ) : (
+              <GraduationCap className="h-4 w-4 text-primary" />
+            )}
+            <span>
+              <span className="block font-semibold text-foreground">O‘quvchi</span>
+              <span className="text-muted-foreground">oquvchi / student123</span>
+            </span>
+          </button>
+        </div>
+        <p className="mt-2 text-[11px] leading-relaxed text-muted-foreground">
+          Demo hisoblar serverda <code className="rounded bg-white/80 px-1 py-0.5">npm run seed</code>{' '}
+          buyrug‘i bilan yaratiladi.
+        </p>
+      </div>
     </AuthLayout>
   );
 }
