@@ -230,6 +230,20 @@ npm run db:push
 npm run seed   # ixtiyoriy: demo o‘qituvchi/o‘quvchilar
 ```
 
+### Keep-alive (free instans uxlamasligi uchun)
+
+`.github/workflows/keep-alive.yml` har 10 daqiqada `/api/health` ga ping yuboradi (GitHub Actions — public repo uchun bepul; Render’ning o‘z cron job’i pullik).
+
+Sozlash: repo → **Settings → Secrets and variables → Actions → Variables → New repository variable**:
+
+| Name | Value |
+|---|---|
+| `RENDER_BACKEND_URL` | `https://<servis-nomi>.onrender.com` |
+
+So‘ng **Actions → Backend keep-alive → Run workflow** bilan qo‘lda sinash mumkin.
+
+Cheklovlar: GitHub cron bir necha daqiqa kechikishi mumkin; repo 60 kun faoliyatsiz bo‘lsa rejalashtirilgan workflow avtomatik o‘chiriladi. 24/7 kafolat kerak bo‘lsa UptimeRobot kabi tashqi monitor ishonchliroq.
+
 Render’ga xos cheklovlar:
 
 - **Free instans 15 daqiqa harakatsizlikdan keyin uxlaydi** (cold start ~50 soniya). Doimiy uyg‘oq turishi uchun pullik instans yoki tashqi cron ping kerak.

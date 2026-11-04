@@ -1,0 +1,52 @@
+# Render free instans 15 daqiqa harakatsizlikdan keyin uxlaydi.
+# Bu workflow har 10 daqiqada /api/health ga so'rov yuborib, servisni uyg'oq tutadi.
+#
+# Sozlash: repo -> Settings -> Secrets and variables -> Actions -> Variables
+#   RENDER_BACKEND_URL = https://<servis-nomi>.onrender.com
+# (maxfiy saqlash kerak bo'lsa Secrets bo'limiga ham qo'shish mumkin.)
+
+name: Backend keep-alive
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: backend-keep-alive
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Ping /api/health
+        env:
+          BACKEND_URL: ${{ vars.RENDER_BACKEND_URL || secrets.RENDER_BACKEND_URL }}
+        run: |
+          if [ -z "$BACKEND_URL" ]; then
+            echo "::error::RENDER_BACKEND_URL sozlanmagan. Repo Settings -> Secrets and variables -> Actions -> Variables bo'limiga qo'shing."
+            exit 1
+          fi
+
+          target="${BACKEND_URL%/}/api/health"
+
+          for attempt in 1 2 3; do
+            status=$(curl -sS -o /dev/null -w '%{http_code}' --max-time 90 "$target" || echo "000")
+            echo "Urinish $attempt: HTTP $status"
+
+            # 503 ham qabul qilinadi: servis uyg'ongan, faqat baza ulanmagan.
+            if [ "$status" != "000" ]; then
+              echo "Render javob berdi — instans uyg'oq."
+              exit 0
+            fi
+
+            sleep 20
+          done
+
+          echo "::error::Render javob bermadi (cold start yoki servis o'chiq): $target"
+          exit 1
