@@ -2,6 +2,9 @@
   "name": "mathtest-ai",
   "version": "1.0.0",
   "private": true,
+  "engines": {
+    "node": "22.x"
+  },
   "description": "MathTest AI — PDF matematika savollarini AI yordamida interaktiv testga aylantiruvchi platforma",
   "workspaces": [
     "backend",

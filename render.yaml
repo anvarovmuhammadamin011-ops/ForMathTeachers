@@ -1,0 +1,50 @@
+# MathTest AI — Render blueprint
+#
+# Render dashboard'da: New + -> Blueprint -> shu repo'ni tanlang.
+# Barcha `sync: false` qiymatlar deploy vaqtida dashboard'da kiritiladi.
+#
+# Eslatma: free tarif 15 daqiqa harakatsizlikdan keyin uxlaydi (cold start ~50 s).
+# Doimiy uyg'oq turishi uchun pullik instans yoki tashqi ping (cron) kerak.
+
+services:
+  - type: web
+    name: mathtest-backend
+    runtime: node
+    plan: free
+    region: frankfurt
+    buildCommand: npm ci --include=dev && npm run db:generate && npm run build -w backend
+    startCommand: npm start -w backend
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      # MongoDB Atlas connection string (mongodb+srv://...)
+      - key: MONGODB_URI
+        sync: false
+      # Kamida 32 belgi. Render avtomatik generatsiya qiladi.
+      - key: SESSION_SECRET
+        generateValue: true
+      # Frontend manzili (masalan https://your-frontend.onrender.com).
+      # Bo'sh qolsa faqat same-origin so'rovlar qabul qilinadi.
+      - key: CLIENT_ORIGIN
+        sync: false
+      # AI kaliti bo'lmasa PDF konvertatsiyasi 503 AI_NOT_CONFIGURED qaytaradi.
+      - key: AI_API_KEY
+        sync: false
+      - key: AI_BASE_URL
+        value: https://api.openai.com/v1
+      - key: AI_MODEL
+        value: gpt-4o
+      - key: AI_VISION_MODEL
+        sync: false
+      - key: AI_SEND_PAGE_IMAGES
+        value: "true"
+      - key: AI_TIMEOUT_MS
+        value: "180000"
+      - key: OCR_ENABLED
+        value: "true"
+      - key: OCR_LANGUAGE
+        value: eng
+      - key: MAX_PDF_MB
+        value: "30"

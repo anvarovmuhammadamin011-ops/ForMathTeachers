@@ -208,6 +208,34 @@ Reyting qoidalari:
 4. `npm run db:push`
 5. `npm start`
 
+### Render (backend)
+
+Repo ildizidagi `render.yaml` Render blueprint’i hisoblanadi. Dashboard’da **New + → Blueprint** qilib repo’ni tanlash kifoya — build, start va health check avtomatik sozlanadi.
+
+Qo‘lda Web Service yaratilsa:
+
+| Sozlama | Qiymat |
+|---|---|
+| Root Directory | bo‘sh (repo ildizi) |
+| Build Command | `npm ci --include=dev && npm run db:generate && npm run build -w backend` |
+| Start Command | `npm start -w backend` |
+| Health Check Path | `/api/health` |
+
+Kerakli muhit o‘zgaruvchilari: `MONGODB_URI`, `SESSION_SECRET` (32+ belgi), `CLIENT_ORIGIN`; `AI_API_KEY` PDF konvertatsiyasi uchun.
+
+Sxemani bir marta qo‘llash (Render Shell bo‘lmasa, lokal `backend/.env` bilan):
+
+```bash
+npm run db:push
+npm run seed   # ixtiyoriy: demo o‘qituvchi/o‘quvchilar
+```
+
+Render’ga xos cheklovlar:
+
+- **Free instans 15 daqiqa harakatsizlikdan keyin uxlaydi** (cold start ~50 soniya). Doimiy uyg‘oq turishi uchun pullik instans yoki tashqi cron ping kerak.
+- **Fayl tizimi vaqtinchalik**: `backend/uploads` qayta deploy/restartda tozalanadi. Yuklangan PDF va sahifa rasmlarini saqlash uchun pullik Disk yoki tashqi storage kerak.
+- Fon navbati bitta jarayonda ishlaydi — bir nechta instans ishga tushirilsa, bitta PDF ikki marta qayta ishlanishi mumkin.
+
 `backend/dist` build qilinganidan so‘ng Express `frontend/dist` ni ham tarqatadi (mavjud bo‘lsa) va SPA route’larni `index.html` ga qaytaradi. Ya’ni bitta server orqali ham ishlatish mumkin. Alohida statik hosting ishlatilsa, API manzilini proxy qiling va `CLIENT_ORIGIN` ni frontend domeniga qo‘ying.
 
 Productionda HTTPS ishlating: `NODE_ENV=production` bo‘lganda sessiya cookie `Secure` bo‘ladi va faqat HTTPS orqali yuboriladi.
