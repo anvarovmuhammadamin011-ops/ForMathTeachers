@@ -212,6 +212,8 @@ Reyting qoidalari:
 
 Repo ildizidagi `render.yaml` Render blueprint’i hisoblanadi. Dashboard’da **New + → Blueprint** qilib repo’ni tanlash kifoya — build, start va health check avtomatik sozlanadi.
 
+Bir bosishda: **<https://render.com/deploy?repo=https://github.com/anvarovmuhammadamin011-ops/ForMathTeachers>** — GitHub bilan kirib, `MONGODB_URI` va `AI_API_KEY` kiritiladi.
+
 Qo‘lda Web Service yaratilsa:
 
 | Sozlama | Qiymat |

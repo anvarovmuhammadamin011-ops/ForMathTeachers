@@ -15,7 +15,7 @@ services:
     buildCommand: npm ci --include=dev && npm run db:generate && npm run build -w backend
     startCommand: npm start -w backend
     healthCheckPath: /api/health
-    autoDeploy: true
+    autoDeployTrigger: commit
     envVars:
       - key: NODE_ENV
         value: production
