@@ -1,0 +1,23 @@
+# Backend dependencies
+node_modules/
+
+# Build output
+dist/
+
+# Muhit fayllari — maxfiy qiymatlar repoga tushmasin
+.env
+.env.local
+.env.*.local
+
+# Runtime ma'lumotlari
+uploads/
+.pgdata/
+.tesseract/
+prisma/*.db
+
+# Loglar
+*.log
+
+# OS fayllari
+.DS_Store
+Thumbs.db

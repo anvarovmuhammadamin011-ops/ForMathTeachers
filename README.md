@@ -12,13 +12,13 @@ O‘qituvchi matematika PDF faylini yuklaydi, AI savollarni ajratadi, yechadi va
 |---|---|
 | Frontend | React 18 + TypeScript + Vite + Tailwind CSS, Radix UI (shadcn uslubi), Lucide, KaTeX |
 | Backend | Express.js + TypeScript, Zod validatsiya |
-| Ma’lumotlar bazasi | PostgreSQL + Prisma ORM |
+| Ma’lumotlar bazasi | MongoDB Atlas + Prisma ORM (Prisma 6.19; MongoDB hali Prisma 7’da qo‘llab-quvvatlanmaydi) |
 | Autentifikatsiya | bcryptjs + bazada saqlanadigan sessiyalar (HMAC-SHA256 token, httpOnly cookie) |
 | AI | OpenAI-mos Chat Completions API (`/v1/chat/completions`), ixtiyoriy vision |
 | PDF / OCR | `pdfjs-dist`, `pdf-to-img`, `tesseract.js` |
 | Tekshiruv | `nerdamer` + `mathjs` (ramziy/numerik), ikkinchi mustaqil AI yechimi |
 
-Monorepo npm workspaces asosida: `server/` va `client/`.
+Monorepo npm workspaces asosida: `backend/` va `frontend/`.
 
 ---
 
@@ -34,35 +34,31 @@ Talablar:
 # 1. Bog‘liqliklarni o‘rnatish
 npm install
 
-# 2. Muhit faylini yaratish
+# 2. Backend muhit faylini yaratish
 #    Windows PowerShell:
-Copy-Item .env.example .env
+Copy-Item backend\.env.example backend\.env
 #    macOS/Linux:
-# cp .env.example .env
+# cp backend/.env.example backend/.env
 
-# 3. `.env` ichida SESSION_SECRET ni almashtiring (production uchun albatta).
-#    Masalan: node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"
+# 3. MongoDB Atlas’da bepul M0 cluster yarating:
+#    https://cloud.mongodb.com -> Create -> M0 Free
+#    Database Access: foydalanuvchi/parol
+#    Network Access: o‘z IP manzilingizni qo‘shing
+#    Connect -> Drivers -> connection string’ni backend/.env dagi
+#    MONGODB_URI ga qo‘ying.
+#    Shuningdek SESSION_SECRET ni almashtiring (production uchun albatta).
 
-# 4. Lokal PostgreSQLni ishga tushirish (alohida terminalda ochiq qoladi)
-npm run db:up
+# 4. Sxema va indekslarni MongoDB’ga qo‘llash
+npm run db:push
 
-# 5. Sxema va Prisma clientni tayyorlash
-npm run db:setup
-
-# 6. Demo ma’lumotlarni yuklash (ixtiyoriy, lekin tavsiya etiladi)
+# 5. Demo ma’lumotlarni yuklash (ixtiyoriy, lekin tavsiya etiladi)
 npm run seed
 
-# 7. Serverni va frontendni ishga tushirish (yana bir terminalda)
-npm run dev:app
-```
-
-Yoki hammasini bitta buyruq bilan:
-
-```bash
+# 6. Backend va frontendni ishga tushirish
 npm run dev
 ```
 
-`npm run dev` bir vaqtda `db:up`, server va clientni ishga tushiradi. Server bazaga ulanishni kutadi va ulanish paydo bo‘lgach fon vazifalarini boshlaydi.
+`npm run dev` bir vaqtda backend va frontendni ishga tushiradi. MongoDB Atlas tashqi xizmat bo‘lgani uchun alohida lokal baza jarayoni yo‘q. Backend bazaga ulanishni kutadi va ulanish paydo bo‘lgach fon vazifalarini boshlaydi.
 
 Manzillar:
 
@@ -72,22 +68,24 @@ Manzillar:
 
 ### Demo hisoblar (`npm run seed` dan keyin)
 
-| Rol | Username | Parol |
-|---|---|---|
-| O‘qituvchi | `oqituvchi` | `teacher123` |
-| O‘quvchi | `oquvchi` | `student123` |
+Tizimda ro‘yxatdan o‘tish yo‘q — barcha akkauntlar oldindan yaratiladi.
 
-Demo sinf qo‘shilish kodi: **`8A2026`**. Demo test AI konvertatsiyasini taqlid qilmaydi — u real bazaga yoziladi va AI kaliti bo‘lmaganda ham o‘quvchi oqimini sinash uchun xizmat qiladi. Kirish sahifasida o‘qituvchi va o‘quvchi uchun bir bosishli **demo kirish** tugmalari mavjud.
+| Rol | Ism-familiya | Login | Parol |
+|---|---|---|---|
+| O‘qituvchi | Odinaxon Qodirjonova | `qodirjonovaodinaxon` | `odinaxon1999` |
+| O‘quvchi | Ibrohim Ummatullayev | `ummatullayevibrohim` | `ibrohim2026` |
+
+To‘liq o‘quvchilar ro‘yxati va ularning login/parollari **`LOGINLAR.md`** faylida. Demo sinf kodi: **`8A2026`**. Demo test AI konvertatsiyasini taqlid qilmaydi — u real bazaga yoziladi va AI kaliti bo‘lmaganda ham o‘quvchi oqimini sinash uchun xizmat qiladi. Kirish sahifasida o‘qituvchi va o‘quvchi uchun bir bosishli **demo kirish** tugmalari mavjud.
 
 ---
 
 ## Muhit o‘zgaruvchilari
 
-Barcha qiymatlar loyiha ildizidagi **`.env`** faylida saqlanadi. Server, seed va Prisma CLI shu faylni o‘qiydi.
+Barcha backend qiymatlari **`backend/.env`** faylida saqlanadi. Server, seed, Prisma CLI va `db:push` shu faylni o‘qiydi. Frontend uchun ixtiyoriy **`frontend/.env`** (`VITE_API_URL`) mavjud.
 
 | O‘zgaruvchi | Majburiy | Standart | Tavsif |
 |---|---|---|---|
-| `DATABASE_URL` | Ha | — | PostgreSQL ulanish manzili |
+| `MONGODB_URI` | Ha | — | MongoDB Atlas connection string (`mongodb+srv://...`) |
 | `PORT` | Yo‘q | `4000` | API server porti |
 | `NODE_ENV` | Yo‘q | `development` | `production` da cookie `secure` bo‘ladi |
 | `SESSION_SECRET` | Productionda ha | — | Sessiya tokenlarini HMAC bilan xeshlash kaliti; productionda kamida 32 belgi |
@@ -101,7 +99,6 @@ Barcha qiymatlar loyiha ildizidagi **`.env`** faylida saqlanadi. Server, seed va
 | `OCR_ENABLED` | Yo‘q | `true` | Skanerlangan sahifalar uchun Tesseract OCR |
 | `OCR_LANGUAGE` | Yo‘q | `eng` | Tesseract tili (matematika formulalari uchun OCR cheklangan) |
 | `MAX_PDF_MB` | Yo‘q | `30` | PDF faylning maksimal hajmi |
-| `PG_PORT` | Yo‘q | `5433` | Faqat `db:up` skripti uchun lokal port |
 
 ### AI kaliti haqida muhim eslatma
 
@@ -135,7 +132,7 @@ AI_VISION_MODEL="openai/gpt-4o"
 
 ### O‘qituvchi
 
-1. Ro‘yxatdan o‘tadi va sinf yaratadi (6 belgili qo‘shilish kodi avtomatik beriladi).
+1. Tayyor login va parol bilan kiradi va sinf yaratadi (6 belgili sinf kodi avtomatik beriladi).
 2. Sinf sahifasida PDF yuklaydi va test nomi hamda davomiyligini kiritadi.
 3. PDF fonda qayta ishlanadi. Interfeysda 5 real bosqich ko‘rinadi:
    - **O‘qish** (PDF matni va sahifalari)
@@ -151,7 +148,7 @@ Tahrirlash savolning tasdiqlash holatini `PENDING` ga, tekshiruv holatini `NEEDS
 
 ### O‘quvchi
 
-1. Qo‘shilish kodi bilan ro‘yxatdan o‘tadi yoki mavjud hisob bilan kiradi.
+1. Tayyor login va parol bilan kiradi. Akkauntlar o‘qituvchi yoki administrator tomonidan oldindan yaratiladi.
 2. Mavjud testlar ro‘yxatidan testni boshlaydi.
 3. Har bir test uchun **faqat bitta urinish**. Sahifa yangilansa yoki qayta kirilsa, faol urinish davom etadi.
 4. Javob tanlanganda avtomatik saqlanadi.
@@ -187,34 +184,35 @@ Reyting qoidalari:
 
 | Buyruq | Vazifasi |
 |---|---|
-| `npm run dev` | Lokal DB + server + client (birgalikda) |
-| `npm run dev:app` | Faqat server + client (DB allaqachon ishlayotgan bo‘lsa) |
-| `npm run db:up` | Embedded PostgreSQL 18 ni 5433-portda ishga tushirish |
-| `npm run db:setup` | `prisma migrate deploy` + `prisma generate` |
-| `npm run seed` | Demo o‘qituvchi, o‘quvchi, sinf va demo test |
+| `npm run dev` | Backend + frontend (birgalikda) |
+| `npm run dev:backend` | Faqat backendni ishga tushirish |
+| `npm run dev:frontend` | Faqat frontendni ishga tushirish |
+| `npm run db:push` | Prisma sxema va indekslarni MongoDB Atlas’ga qo‘llash |
+| `npm run db:generate` | Prisma Client’ni qayta generatsiya qilish |
+| `npm run db:studio` | Prisma Studio |
+| `npm run seed` | Demo o‘qituvchi, o‘quvchilar, sinf va demo test |
 | `npm run e2e` | 38 ta HTTP darajasidagi end-to-end tekshiruv |
-| `npm run typecheck` | Server va client TypeScript tekshiruvi |
-| `npm run build` | Server (`dist/`) va client (`client/dist/`) production build |
-| `npm start` | Build qilingan serverni ishga tushirish |
-| `npm run db:studio -w server` | Prisma Studio |
+| `npm run typecheck` | Backend va frontend TypeScript tekshiruvi |
+| `npm run build` | Backend (`backend/dist/`) va frontend (`frontend/dist/`) production build |
+| `npm start` | Build qilingan backendni ishga tushirish |
 
-`npm run e2e` real bazada izolyatsiyalangan ma’lumot yaratadi va oxirida ularni o‘chiradi. U quyidagilarni tekshiradi: health, autentifikatsiya, RBAC, testni boshlash, javoblarni avtosaqlash, baholash, yashirin javoblar, natija huquqlari, vaqt tugashi bilan avtomatik topshirish, test va umumiy reyting (teng ball / tezroq vaqt / bir xil o‘rin).
+`npm run e2e` real MongoDB bazada izolyatsiyalangan ma’lumot yaratadi va oxirida ularni o‘chiradi. U quyidagilarni tekshiradi: health, autentifikatsiya, RBAC, testni boshlash, javoblarni avtosaqlash, baholash, yashirin javoblar, natija huquqlari, vaqt tugashi bilan avtomatik topshirish, test va umumiy reyting (teng ball / tezroq vaqt / bir xil o‘rin).
 
 ---
 
 ## Production
 
-1. Tashqi PostgreSQL yarating va `DATABASE_URL` ni qo‘ying.
+1. MongoDB Atlas’da cluster yarating va `MONGODB_URI` ni qo‘ying. Productionda alohida database user va IP allowlist ishlating.
 2. `NODE_ENV=production`, kamida 32 belgili `SESSION_SECRET`, to‘g‘ri `CLIENT_ORIGIN` ni o‘rnating.
 3. `npm install && npm run build`
-4. `npm run db:setup`
+4. `npm run db:push`
 5. `npm start`
 
-`server/dist` build qilinganidan so‘ng Express `client/dist` ni ham tarqatadi (mavjud bo‘lsa) va SPA route’larni `index.html` ga qaytaradi. Ya’ni bitta server orqali ham ishlatish mumkin. Alohida statik hosting ishlatilsa, API manzilini proxy qiling va `CLIENT_ORIGIN` ni frontend domeniga qo‘ying.
+`backend/dist` build qilinganidan so‘ng Express `frontend/dist` ni ham tarqatadi (mavjud bo‘lsa) va SPA route’larni `index.html` ga qaytaradi. Ya’ni bitta server orqali ham ishlatish mumkin. Alohida statik hosting ishlatilsa, API manzilini proxy qiling va `CLIENT_ORIGIN` ni frontend domeniga qo‘ying.
 
 Productionda HTTPS ishlating: `NODE_ENV=production` bo‘lganda sessiya cookie `Secure` bo‘ladi va faqat HTTPS orqali yuboriladi.
 
-Embedded PostgreSQL faqat lokal dev uchun. Productionda `npm run db:up` ishlatilmaydi.
+MongoDB Atlas replica set bilan keladi — Prisma tranzaksiyalari va nested write’lar shu tufayli ishlaydi. Lokal MongoDB ishlatilsa, uni `--replSet` bilan ishga tushirish shart.
 
 ---
 
@@ -222,21 +220,28 @@ Embedded PostgreSQL faqat lokal dev uchun. Productionda `npm run db:up` ishlatil
 
 ```
 .
-├─ client/                  React + Vite frontend
-│  └─ src/
-│     ├─ pages/             auth, teacher, student, shared sahifalar
-│     ├─ components/        UI, matematika (KaTeX), layout
-│     └─ lib/               API, auth, tiplar, yordamchilar
-├─ server/
+├─ frontend/                React + Vite frontend
+│  ├─ src/
+│  │  ├─ pages/             auth, teacher, student, shared sahifalar
+│  │  ├─ components/        UI, matematika (KaTeX), layout
+│  │  └─ lib/               API, auth, tiplar, yordamchilar
+│  ├─ .env.example          ixtiyoriy VITE_API_URL
+│  └─ .gitignore
+├─ backend/                 Express + Prisma backend
 │  ├─ src/
 │  │  ├─ routes/            REST endpointlar
 │  │  ├─ services/          AI, PDF/OCR, tekshiruv, urinish, reyting
 │  │  ├─ middleware/        auth, origin guard, xatolar
+│  │  ├─ types/             domain tiplari (role/status), Express augmentatsiyasi
 │  │  └─ lib/               env, validatsiya, rate limit
-│  ├─ prisma/               schema, migratsiyalar, seed
-│  └─ scripts/              dev-db, e2e
-├─ .env.example
-└─ package.json
+│  ├─ prisma/               MongoDB schema va seed
+│  ├─ scripts/              e2e
+│  ├─ .env                  maxfiy lokal qiymatlar (gitga tushmaydi)
+│  ├─ .env.example          namuna muhit fayli
+│  └─ .gitignore
+├─ .gitignore
+├─ package.json             npm workspaces + umumiy skriptlar
+└─ README.md
 ```
 
 Ma’lumotlar bazasi modellari: `User`, `Session`, `Classroom`, `ClassroomStudent`, `Test`, `Question`, `TestAttempt`, `StudentAnswer`, `PDFProcessingJob`.
@@ -272,27 +277,25 @@ Ma’lumotlar bazasi modellari: `User`, `Session`, `Classroom`, `ClassroomStuden
 
 ## Muammolarni bartaraf etish
 
-**`character with byte sequence ... has no equivalent in encoding "WIN1251"`**
+**`Environment variable not found: MONGODB_URI`**
 
-Eski Windows kodlashida yaratilgan klaster. To‘xtating va qayta yarating:
+`backend/.env` faylida `MONGODB_URI` yo‘q. `.env.example` dan nusxalang va Atlas connection string’ini qo‘ying. Placeholder (`USER:PASSWORD`) bilan ulanish ishlamaydi.
 
-```bash
-# DB jarayonini to‘xtating, so‘ng:
-rm -rf server/.pgdata        # Windows PowerShell: Remove-Item -Recurse -Force server\.pgdata
-npm run db:up
-npm run db:setup
-npm run seed
-```
+**`Server selection timed out` yoki `ECONNREFUSED`**
 
-Yangi klaster `--encoding=UTF8 --locale=C` bilan yaratiladi.
+MongoDB Atlas’ga ulanib bo‘lmadi. Network Access bo‘limida joriy IP manzil qo‘shilganini, cluster ishlab turganini va `MONGODB_URI` to‘g‘riligini tekshiring.
 
-**`ECONNREFUSED 127.0.0.1:5433`**
+**`Authentication failed`**
 
-PostgreSQL ishlamayapti. Alohida terminalda `npm run db:up` ni ishga tushiring yoki `DATABASE_URL` ni tekshiring.
+Database Access’dagi foydalanuvchi nomi/parol xato yoki parolda maxsus belgilar URL-encode qilinmagan. Parolni connection string’da percent-encoding bilan yozing.
+
+**`Transactions are not supported by this deployment`**
+
+MongoDB replica set emas. Atlas cluster ishlating yoki lokal `mongod` ni `--replSet` bilan ishga tushiring. Prisma nested write va tranzaksiyalar uchun replica set talab qiladi.
 
 **PDF yuklashda `AI_NOT_CONFIGURED`**
 
-`.env` da `AI_API_KEY` bo‘sh. Kalit kiriting va serverni qayta ishga tushiring.
+`backend/.env` da `AI_API_KEY` bo‘sh. Kalit kiriting va backendni qayta ishga tushiring.
 
 **AI 401 / 429 / model topilmadi**
 

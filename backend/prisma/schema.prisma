@@ -1,0 +1,181 @@
+// MathTest AI — ma'lumotlar bazasi sxemasi (MongoDB + Prisma)
+//
+// MongoDB uchun Prisma Migrate ishlatilmaydi. Sxemani bazaga qo'llash:
+//   npm run db:push
+//
+// Enum'lar MongoDB connector'ida qo'llab-quvvatlanmaydi, shuning uchun
+// rol/status maydonlari String sifatida saqlanadi. Ruxsat etilgan qiymatlar
+// `src/types/domain.ts` da tiplangan.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("MONGODB_URI")
+}
+
+model User {
+  id           String   @id @default(cuid()) @map("_id")
+  firstName    String
+  lastName     String
+  username     String   @unique
+  passwordHash String
+  role         String
+  schoolName   String?
+  createdAt    DateTime @default(now())
+
+  sessions          Session[]
+  classrooms        Classroom[]       @relation("TeacherClassrooms")
+  createdTests      Test[]            @relation("TeacherTests")
+  memberships       ClassroomStudent[]
+  attempts          TestAttempt[]
+  pdfJobs           PDFProcessingJob[]
+}
+
+model Session {
+  id            String   @id @default(cuid()) @map("_id")
+  tokenHash     String   @unique
+  userId        String
+  expiresAt     DateTime?
+  isPermanent   Boolean  @default(false)
+  createdAt     DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model Classroom {
+  id        String   @id @default(cuid()) @map("_id")
+  name      String
+  teacherId String
+  joinCode  String   @unique
+  createdAt DateTime @default(now())
+
+  teacher  User               @relation("TeacherClassrooms", fields: [teacherId], references: [id], onDelete: Cascade)
+  students ClassroomStudent[]
+  tests    Test[]
+
+  @@unique([teacherId, name])
+  @@index([teacherId])
+}
+
+model ClassroomStudent {
+  id          String   @id @default(cuid()) @map("_id")
+  classroomId String
+  studentId   String
+  joinedAt    DateTime @default(now())
+
+  classroom Classroom @relation(fields: [classroomId], references: [id], onDelete: Cascade)
+  student   User      @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([classroomId, studentId])
+  @@index([studentId])
+}
+
+model Test {
+  id              String    @id @default(cuid()) @map("_id")
+  title           String
+  teacherId       String
+  classroomId     String
+  durationMinutes Int
+  status          String    @default("DRAFT")
+  createdAt       DateTime  @default(now())
+  publishedAt     DateTime?
+
+  teacher   User               @relation("TeacherTests", fields: [teacherId], references: [id], onDelete: Cascade)
+  classroom Classroom          @relation(fields: [classroomId], references: [id], onDelete: Cascade)
+  questions Question[]
+  attempts  TestAttempt[]
+  pdfJob    PDFProcessingJob?
+
+  @@index([teacherId])
+  @@index([classroomId])
+  @@index([status])
+}
+
+model Question {
+  id                 String   @id @default(cuid()) @map("_id")
+  testId             String
+  questionNumber     Int
+  questionText       String
+  options            String[]
+  correctAnswer      Int
+  solution           String
+  verificationStatus String   @default("NEEDS_REVIEW")
+  verificationMethod String?
+  verificationNote   String?
+  approvalStatus     String   @default("PENDING")
+  sourcePage         Int
+  order              Int
+  pageImagePath      String?
+  diagramBBox        Json?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  test    Test            @relation(fields: [testId], references: [id], onDelete: Cascade)
+  answers StudentAnswer[]
+
+  @@unique([testId, order])
+  @@index([testId])
+}
+
+model TestAttempt {
+  id               String    @id @default(cuid()) @map("_id")
+  testId           String
+  studentId        String
+  startedAt        DateTime  @default(now())
+  expiresAt        DateTime
+  submittedAt      DateTime?
+  status           String    @default("IN_PROGRESS")
+  correctCount     Int       @default(0)
+  incorrectCount   Int       @default(0)
+  unansweredCount  Int       @default(0)
+  scorePercentage  Float     @default(0)
+  timeSpentSeconds Int       @default(0)
+
+  test    Test            @relation(fields: [testId], references: [id], onDelete: Cascade)
+  student User            @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  answers StudentAnswer[]
+
+  @@unique([testId, studentId])
+  @@index([studentId])
+  @@index([status, expiresAt])
+}
+
+model StudentAnswer {
+  id             String   @id @default(cuid()) @map("_id")
+  attemptId      String
+  questionId     String
+  selectedOption Int?
+  isCorrect      Boolean?
+  updatedAt      DateTime @updatedAt
+
+  attempt  TestAttempt @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+  question Question    @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@unique([attemptId, questionId])
+  @@index([questionId])
+}
+
+model PDFProcessingJob {
+  id           String   @id @default(cuid()) @map("_id")
+  teacherId    String
+  testId       String   @unique
+  filePath     String
+  status       String   @default("QUEUED")
+  progress     Int      @default(0)
+  pageCount    Int      @default(0)
+  errorMessage String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  teacher User @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  test    Test @relation(fields: [testId], references: [id], onDelete: Cascade)
+
+  @@index([status])
+  @@index([teacherId])
+}

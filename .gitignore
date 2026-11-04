@@ -1,11 +1,16 @@
+# Monorepo umumiy ignore qoidalari
 node_modules/
 dist/
+coverage/
+
+# Muhit fayllari (backend/.env va frontend/.env alohida ignore qilinadi)
 .env
 .env.local
+.env.*.local
+
+# Loglar
 *.log
-server/uploads/
-server/.pgdata/
-server/.tesseract/
-server/prisma/*.db
+
+# OS fayllari
 .DS_Store
-coverage/
+Thumbs.db
