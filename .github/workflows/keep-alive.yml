@@ -1,5 +1,7 @@
 # Render free instans 15 daqiqa harakatsizlikdan keyin uxlaydi.
-# Bu workflow har 10 daqiqada /api/health ga so'rov yuborib, servisni uyg'oq tutadi.
+# Bu workflow har 5 daqiqada /api/health ga so'rov yuborib, servisni uyg'oq tutadi.
+# 5 daqiqa — GitHub cron uchun eng kichik oraliq; kechikish bo'lsa ham 15 daqiqalik
+# uyqu oynasiga uch marta urinish to'g'ri keladi.
 #
 # Sozlash (ixtiyoriy): repo -> Settings -> Secrets and variables -> Actions -> Variables
 #   RENDER_BACKEND_URL = https://<servis-nomi>.onrender.com
@@ -11,7 +13,7 @@ name: Backend keep-alive
 
 on:
   schedule:
-    - cron: '*/10 * * * *'
+    - cron: '*/5 * * * *'
   workflow_dispatch:
 
 concurrency:

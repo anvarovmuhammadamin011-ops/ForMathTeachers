@@ -282,7 +282,7 @@ Qo‘lda Web Service yaratilsa:
 
 ### Keep-alive (free instans uxlamasligi uchun)
 
-`.github/workflows/keep-alive.yml` har 10 daqiqada `/api/health` ga ping yuboradi (GitHub Actions — public repo uchun bepul; Render’ning o‘z cron job’i pullik).
+`.github/workflows/keep-alive.yml` har 5 daqiqada `/api/health` ga ping yuboradi (GitHub Actions — public repo uchun bepul; Render’ning o‘z cron job’i pullik).
 
 Sozlash: repo → **Settings → Secrets and variables → Actions → Variables → New repository variable**:
 
