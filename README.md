@@ -259,6 +259,8 @@ Deploy vaqtida kiritiladigan qiymatlar:
 
 `SESSION_SECRET` Render tomonidan avtomatik generatsiya qilinadi.
 
+Agar frontend alohida (masalan, Vercel’da) joylashgan bo‘lsa: Render’da `CLIENT_ORIGIN` ni o‘sha domenga qo‘ying va Vercel’da `VITE_API_URL=https://<render-servis>.onrender.com` o‘rnating. Bitta Render servisi ishlatilsa, bular shart emas.
+
 **Muhim:** Atlas → **Network Access** bo‘limida `0.0.0.0/0` (Allow access from anywhere) qo‘shing — Render IP manzillari dinamik, aks holda build vaqtidagi `db:push`/`seed` bazaga ulanmaydi.
 
 Build command (blueprint’da avtomatik):
