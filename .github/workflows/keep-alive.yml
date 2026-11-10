@@ -5,8 +5,8 @@
 #
 # Sozlash (ixtiyoriy): repo -> Settings -> Secrets and variables -> Actions -> Variables
 #   RENDER_BACKEND_URL = https://<servis-nomi>.onrender.com
-# Agar servis nomi `mathtest-backend` bo'lsa, o'zgaruvchisiz ham ishlaydi:
-# standart manzil https://mathtest-backend.onrender.com.
+# Standart manzil hozirgi Render servisiga ishora qiladi:
+# https://formathteachers-1.onrender.com.
 # (maxfiy saqlash kerak bo'lsa Secrets bo'limiga ham qo'shish mumkin.)
 
 name: Backend keep-alive
@@ -30,7 +30,7 @@ jobs:
     steps:
       - name: Ping /api/health
         env:
-          BACKEND_URL: ${{ vars.RENDER_BACKEND_URL || secrets.RENDER_BACKEND_URL || 'https://mathtest-backend.onrender.com' }}
+          BACKEND_URL: ${{ vars.RENDER_BACKEND_URL || secrets.RENDER_BACKEND_URL || 'https://formathteachers-1.onrender.com' }}
         run: |
           target="${BACKEND_URL%/}/api/health"
 
