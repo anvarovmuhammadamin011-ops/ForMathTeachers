@@ -110,7 +110,7 @@ export default function StudentTestsPage() {
       ) : (
         <>
           <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-            <div className="inline-flex rounded-xl border border-border bg-white p-1">
+            <div className="inline-flex rounded-xl border border-white/60 bg-white/55 p-1 backdrop-blur-md">
               {[
                 { key: 'available' as const, label: 'Mavjud', count: data.available.length },
                 { key: 'completed' as const, label: 'Topshirilgan', count: data.completed.length },
@@ -151,7 +151,7 @@ export default function StudentTestsPage() {
                 <select
                   value={classroomFilter}
                   onChange={(event) => setClassroomFilter(event.target.value)}
-                  className="h-11 rounded-lg border border-input bg-white px-3.5 text-sm text-foreground shadow-sm focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/10 sm:w-44"
+                  className="h-11 rounded-xl border border-white/70 bg-white/80 px-3.5 text-sm text-foreground shadow-[inset_0_1px_0_rgba(255,255,255,0.7)] backdrop-blur-md focus:border-primary/60 focus:bg-white focus:outline-none focus:ring-4 focus:ring-primary/15 supports-[backdrop-filter]:bg-white/55 sm:w-44"
                 >
                   <option value="all">Barcha sinflar</option>
                   {data.classrooms.map((classroom) => (

@@ -62,7 +62,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
           <div
             key={item.id}
             className={cn(
-              'pointer-events-auto flex w-full max-w-sm animate-slide-up items-start gap-3 rounded-xl border bg-white p-4 shadow-pop',
+              'pointer-events-auto flex w-full max-w-sm animate-slide-up items-start gap-3 rounded-2xl border border-white/70 bg-white/85 p-4 shadow-glass-lg backdrop-blur-2xl supports-[backdrop-filter]:bg-white/70',
               item.variant === 'success' && 'border-success/20',
               item.variant === 'error' && 'border-danger/20',
               item.variant === 'info' && 'border-border',

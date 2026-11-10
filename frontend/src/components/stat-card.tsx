@@ -3,11 +3,11 @@ import { Card } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 
 const tones = {
-  blue: 'bg-primary-50 text-primary-700',
-  green: 'bg-success-soft text-success-foreground',
-  amber: 'bg-warning-soft text-warning-foreground',
-  slate: 'bg-muted text-slate-600',
-  violet: 'bg-violet-50 text-violet-700',
+  blue: 'from-primary-500/25 to-primary-500/5 text-primary-700 ring-primary-500/20',
+  green: 'from-emerald-500/25 to-emerald-500/5 text-emerald-700 ring-emerald-500/20',
+  amber: 'from-amber-500/25 to-amber-500/5 text-amber-700 ring-amber-500/20',
+  slate: 'from-slate-500/20 to-slate-500/5 text-slate-600 ring-slate-400/20',
+  violet: 'from-violet-500/25 to-violet-500/5 text-violet-700 ring-violet-500/20',
 } as const;
 
 export function StatCard({
@@ -26,8 +26,17 @@ export function StatCard({
   className?: string;
 }) {
   return (
-    <Card className={cn('group p-5 transition hover:-translate-y-0.5 hover:shadow-pop sm:p-6', className)}>
-      <div className="flex items-start justify-between gap-3">
+    <Card
+      className={cn(
+        'group relative overflow-hidden p-5 transition duration-300 hover:-translate-y-0.5 hover:shadow-glass-lg sm:p-6',
+        className,
+      )}
+    >
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -right-10 -top-12 h-28 w-28 rounded-full bg-gradient-to-br from-primary/15 to-violet-400/10 blur-2xl transition duration-500 group-hover:scale-110"
+      />
+      <div className="relative flex items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
             {label}
@@ -39,7 +48,7 @@ export function StatCard({
         </div>
         <div
           className={cn(
-            'flex h-11 w-11 shrink-0 items-center justify-center rounded-xl transition group-hover:scale-105',
+            'flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-white/60 bg-gradient-to-br shadow-glass-sm ring-1 transition duration-300 group-hover:scale-105',
             tones[tone],
           )}
         >

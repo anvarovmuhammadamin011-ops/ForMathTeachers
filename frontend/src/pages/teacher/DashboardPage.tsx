@@ -169,7 +169,7 @@ export default function TeacherDashboardPage() {
             </CardHeader>
             <CardContent className="space-y-2.5 pt-4">
               {classrooms.length === 0 ? (
-                <div className="rounded-xl border border-dashed border-border p-5 text-center">
+                <div className="rounded-xl border border-dashed border-white/80 bg-white/40 p-5 text-center backdrop-blur-md">
                   <School className="mx-auto h-8 w-8 text-slate-300" />
                   <p className="mt-2 text-sm font-medium">Sinf hali yo‘q</p>
                   <p className="mt-1 text-xs text-muted-foreground">
@@ -183,7 +183,7 @@ export default function TeacherDashboardPage() {
                 classrooms.slice(0, 4).map((classroom) => (
                   <div
                     key={classroom.id}
-                    className="flex items-center justify-between gap-3 rounded-xl border border-border bg-white p-3 transition hover:border-primary/30 hover:bg-soft/30"
+                    className="flex items-center justify-between gap-3 rounded-xl border border-white/60 bg-white/60 p-3 backdrop-blur-md transition hover:border-primary/30 hover:bg-white/90"
                   >
                     <div className="flex min-w-0 items-center gap-3">
                       <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-soft text-primary">

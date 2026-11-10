@@ -5,7 +5,7 @@ export function Card({ className, ...props }: React.HTMLAttributes<HTMLDivElemen
   return (
     <div
       className={cn(
-        'rounded-2xl border border-border bg-white shadow-card transition-shadow',
+        'glass min-w-0 transition-all duration-300 supports-[backdrop-filter]:bg-white/60',
         className,
       )}
       {...props}
@@ -34,7 +34,7 @@ export function CardContent({ className, ...props }: React.HTMLAttributes<HTMLDi
 export function CardFooter({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={cn('flex flex-wrap items-center gap-2 border-t border-border px-5 py-4 sm:px-6', className)}
+      className={cn('flex flex-wrap items-center gap-2 border-t border-white/60 px-5 py-4 sm:px-6', className)}
       {...props}
     />
   );

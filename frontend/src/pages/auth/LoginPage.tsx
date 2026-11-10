@@ -89,11 +89,11 @@ export default function LoginPage() {
         </p>
       }
     >
-      <div className="flex items-center justify-between gap-2">
+      <div className="mb-4 flex items-center justify-end gap-2">
         <button
           type="button"
           onClick={() => setUsersExpanded((value) => !value)}
-          className="inline-flex items-center gap-1.5 rounded-full border border-border bg-white px-2.5 py-1 text-xs font-semibold text-muted-foreground transition hover:border-primary/40"
+          className="inline-flex items-center gap-1.5 rounded-full border border-white/70 bg-white/65 px-2.5 py-1 text-xs font-semibold text-muted-foreground backdrop-blur-md transition hover:border-primary/30 hover:bg-white/90"
         >
           <MoreHorizontal className="h-3.5 w-3.5" />
           {usersExpanded ? 'Ko‘rikni yashirish' : 'Ko‘proq foydalanuvchi'}
@@ -151,15 +151,15 @@ export default function LoginPage() {
 
       {usersExpanded && (
         <div className="mt-5 space-y-2.5">
-          <div className="rounded-xl border border-dashed border-border bg-soft/40 p-3.5">
+          <div className="rounded-xl border border-dashed border-white/80 bg-white/50 p-3.5 backdrop-blur-md">
             <div className="flex items-center justify-between">
-              <p className="text-xs font-semibold text-primary-700">Hammasi</p>
+              <p className="text-xs font-semibold text-primary-700">Demo hisoblar</p>
               <button
                 type="button"
                 onClick={() => setUsersExpanded(false)}
-                className="rounded-full bg-white px-2 py-0.5 text-[10px] font-semibold text-muted-foreground transition hover:border-primary/40"
+                className="rounded-full bg-white/80 px-2 py-0.5 text-[10px] font-semibold text-muted-foreground transition hover:border-primary/40"
               >
-                Ko‘rikni yashirish
+                Yashirish
               </button>
             </div>
 
@@ -167,7 +167,7 @@ export default function LoginPage() {
               type="button"
               onClick={() => void handleDemoLogin('TEACHER')}
               disabled={loading || demoLoading !== null}
-              className="flex w-full items-center gap-2 rounded-lg border border-border bg-white px-2.5 py-2 text-left text-xs transition hover:border-primary/40 disabled:pointer-events-none disabled:opacity-60"
+              className="flex w-full items-center gap-2 rounded-xl border border-white/70 bg-white/70 px-2.5 py-2 text-left text-xs backdrop-blur-md transition hover:border-primary/30 hover:bg-white/95 disabled:pointer-events-none disabled:opacity-60"
             >
               {demoLoading === 'TEACHER' ? (
                 <Loader2 className="h-4 w-4 animate-spin text-primary" />
@@ -184,7 +184,7 @@ export default function LoginPage() {
               type="button"
               onClick={() => void handleDemoLogin('STUDENT')}
               disabled={loading || demoLoading !== null}
-              className="flex w-full items-center gap-2 rounded-lg border border-border bg-white px-2.5 py-2 text-left text-xs transition hover:border-primary/40 disabled:pointer-events-none disabled:opacity-60"
+              className="flex w-full items-center gap-2 rounded-xl border border-white/70 bg-white/70 px-2.5 py-2 text-left text-xs backdrop-blur-md transition hover:border-primary/30 hover:bg-white/95 disabled:pointer-events-none disabled:opacity-60"
             >
               {demoLoading === 'STUDENT' ? (
                 <Loader2 className="h-4 w-4 animate-spin text-primary" />
@@ -201,13 +201,6 @@ export default function LoginPage() {
               Demo hisoblar serverda <code className="rounded bg-white/80 px-1 py-0.5">npm run seed</code>{' '}
               buyrug‘i bilan yaratiladi. Barcha o‘quvchi loginlari{' '}
               <code className="rounded bg-white/80 px-1 py-0.5">LOGINLAR.md</code> faylida.
-            </p>
-          </div>
-
-          <div className="rounded-xl border border-border bg-soft/40 p-3.5">
-            <p className="text-xs font-semibold text-primary-700">Ko‘proq foydalanuvchi</p>
-            <p className="mt-1 text-xs text-muted-foreground">
-              Barcha foydalanuvchilar ro‘yxati shu yerda kelsa, ularning loginlari va parollari bu yerda bo‘ladi.
             </p>
           </div>
         </div>

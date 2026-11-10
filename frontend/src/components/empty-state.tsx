@@ -18,11 +18,11 @@ export function EmptyState({
   return (
     <div
       className={cn(
-        'flex flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-white/60 px-6 py-12 text-center',
+        'flex flex-col items-center justify-center rounded-2xl border border-dashed border-white/70 bg-white/70 px-6 py-12 text-center backdrop-blur-xl supports-[backdrop-filter]:bg-white/45',
         className,
       )}
     >
-      <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-soft text-primary">
+      <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-white/60 bg-gradient-to-br from-primary-50 to-white/70 text-primary shadow-glass-sm">
         <Icon className="h-6 w-6" />
       </div>
       <h3 className="mt-4 text-base font-semibold text-foreground">{title}</h3>

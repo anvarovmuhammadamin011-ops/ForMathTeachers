@@ -215,8 +215,8 @@ export default function AttemptPage() {
   const warning = remaining !== null && remaining > 60 && remaining <= 300;
 
   return (
-    <div className="min-h-screen bg-background pb-10">
-      <header className="sticky top-0 z-40 border-b border-border bg-white/95 backdrop-blur">
+    <div className="min-h-screen pb-10">
+      <header className="sticky top-0 z-40 border-b border-white/60 bg-white/80 backdrop-blur-2xl supports-[backdrop-filter]:bg-white/70">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-3 px-4 sm:px-6">
           <div className="flex min-w-0 items-center gap-3">
             <LogoMark className="h-9 w-9" />
@@ -343,8 +343,8 @@ export default function AttemptPage() {
                               className={cn(
                                 'flex items-start gap-2.5 rounded-xl border px-3 py-3 text-left transition',
                                 isSelected
-                                  ? 'border-primary bg-soft/80 shadow-sm ring-1 ring-primary/20'
-                                  : 'border-border bg-white hover:border-primary/40 hover:bg-soft/30',
+                                  ? 'border-primary bg-primary-50/85 shadow-sm ring-1 ring-primary/20 backdrop-blur-md'
+                                  : 'border-white/70 bg-white/70 backdrop-blur-md hover:border-primary/30 hover:bg-white/95',
                               )}
                             >
                               <span

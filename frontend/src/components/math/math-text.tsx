@@ -63,7 +63,7 @@ export function QuestionDiagram({
   if (!imageUrl || !bbox) return null;
 
   return (
-    <figure className="overflow-hidden rounded-xl border border-border bg-white">
+    <figure className="overflow-hidden rounded-xl border border-white/70 bg-white/80 backdrop-blur-md">
       <div className="relative">
         <img
           src={imageUrl}

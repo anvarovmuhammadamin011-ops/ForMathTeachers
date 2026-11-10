@@ -13,7 +13,7 @@ const SelectTrigger = React.forwardRef<
   <SelectPrimitive.Trigger
     ref={ref}
     className={cn(
-      'flex h-11 w-full items-center justify-between gap-2 rounded-lg border border-input bg-white px-3.5 py-2 text-sm text-foreground shadow-sm transition data-[placeholder]:text-muted-foreground/70 focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/10 disabled:cursor-not-allowed disabled:bg-muted disabled:opacity-70',
+      'flex h-11 w-full items-center justify-between gap-2 rounded-xl border border-white/70 bg-white/80 px-3.5 py-2 text-sm text-foreground shadow-[inset_0_1px_0_rgba(255,255,255,0.7)] backdrop-blur-md transition data-[placeholder]:text-muted-foreground/70 focus:border-primary/60 focus:bg-white focus:outline-none focus:ring-4 focus:ring-primary/15 disabled:cursor-not-allowed disabled:bg-muted disabled:opacity-70 supports-[backdrop-filter]:bg-white/55',
       className,
     )}
     {...props}
@@ -35,7 +35,7 @@ const SelectContent = React.forwardRef<
       ref={ref}
       position={position}
       className={cn(
-        'relative z-[60] max-h-72 min-w-[10rem] overflow-hidden rounded-xl border border-border bg-white text-foreground shadow-pop data-[state=open]:animate-fade-in',
+        'relative z-[60] max-h-72 min-w-[10rem] overflow-hidden rounded-xl border border-white/70 bg-white/[0.94] text-foreground shadow-glass-lg backdrop-blur-2xl data-[state=open]:animate-fade-in',
         position === 'popper' && 'w-full min-w-[var(--radix-select-trigger-width)]',
         className,
       )}

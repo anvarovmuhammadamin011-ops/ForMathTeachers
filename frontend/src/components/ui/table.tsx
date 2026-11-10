@@ -3,14 +3,14 @@ import { cn } from '@/lib/utils';
 
 export function Table({ className, ...props }: HTMLAttributes<HTMLTableElement>) {
   return (
-    <div className="w-full overflow-x-auto">
+    <div className="w-full max-w-full overflow-x-auto">
       <table className={cn('w-full caption-bottom text-sm', className)} {...props} />
     </div>
   );
 }
 
 export function TableHeader({ className, ...props }: HTMLAttributes<HTMLTableSectionElement>) {
-  return <thead className={cn('[&_tr]:border-b [&_tr]:border-border', className)} {...props} />;
+  return <thead className={cn('[&_tr]:border-b [&_tr]:border-white/60', className)} {...props} />;
 }
 
 export function TableBody({ className, ...props }: HTMLAttributes<HTMLTableSectionElement>) {
@@ -21,7 +21,7 @@ export function TableRow({ className, ...props }: HTMLAttributes<HTMLTableRowEle
   return (
     <tr
       className={cn(
-        'border-b border-border/80 transition-colors hover:bg-slate-50/70',
+        'border-b border-white/50 transition-colors hover:bg-white/55',
         className,
       )}
       {...props}
@@ -33,7 +33,7 @@ export function TableHead({ className, ...props }: ThHTMLAttributes<HTMLTableCel
   return (
     <th
       className={cn(
-        'h-11 whitespace-nowrap px-4 text-left align-middle text-xs font-semibold uppercase tracking-wide text-muted-foreground',
+        'h-11 px-3 text-left align-middle text-[11px] font-semibold uppercase leading-tight tracking-wide text-muted-foreground sm:px-4 sm:text-xs',
         className,
       )}
       {...props}
@@ -42,5 +42,5 @@ export function TableHead({ className, ...props }: ThHTMLAttributes<HTMLTableCel
 }
 
 export function TableCell({ className, ...props }: TdHTMLAttributes<HTMLTableCellElement>) {
-  return <td className={cn('px-4 py-3.5 align-middle', className)} {...props} />;
+  return <td className={cn('px-3 py-3 align-middle sm:px-4 sm:py-3.5', className)} {...props} />;
 }

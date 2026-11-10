@@ -5,22 +5,27 @@ import { Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-semibold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-55 active:scale-[0.985]',
+  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl text-sm font-semibold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-55 active:scale-[0.985]',
   {
     variants: {
       variant: {
         default:
-          'bg-primary text-primary-foreground shadow-sm shadow-primary/25 hover:bg-primary-700 hover:shadow-md hover:shadow-primary/25',
-        secondary: 'bg-soft text-primary-700 hover:bg-primary-100',
-        outline: 'border border-border bg-white text-foreground hover:border-primary/40 hover:bg-soft/60',
-        ghost: 'text-muted-foreground hover:bg-muted hover:text-foreground',
-        subtle: 'bg-muted text-foreground hover:bg-slate-200/70',
-        danger: 'bg-danger text-white shadow-sm shadow-danger/20 hover:bg-red-700',
-        success: 'bg-success text-white shadow-sm shadow-success/20 hover:bg-green-700',
+          'bg-gradient-to-br from-primary-500 via-primary-600 to-primary-700 text-primary-foreground shadow-sm shadow-primary/30 hover:shadow-lg hover:shadow-primary/30 hover:brightness-105',
+        secondary:
+          'border border-white/60 bg-white/70 text-primary-700 shadow-glass-sm backdrop-blur-md hover:bg-white/90 supports-[backdrop-filter]:bg-white/50 supports-[backdrop-filter]:hover:bg-white/75',
+        outline:
+          'border border-white/70 bg-white/60 text-foreground shadow-glass-sm backdrop-blur-md hover:border-primary/30 hover:bg-white/90 supports-[backdrop-filter]:bg-white/40 supports-[backdrop-filter]:hover:bg-white/70',
+        ghost: 'text-muted-foreground hover:bg-white/60 hover:text-foreground hover:backdrop-blur-md',
+        subtle:
+          'border border-white/50 bg-white/50 text-foreground backdrop-blur-md hover:bg-white/80',
+        danger:
+          'bg-gradient-to-br from-rose-500 to-red-600 text-white shadow-sm shadow-danger/25 hover:shadow-lg hover:shadow-danger/25 hover:brightness-105',
+        success:
+          'bg-gradient-to-br from-emerald-500 to-green-600 text-white shadow-sm shadow-success/25 hover:shadow-lg hover:shadow-success/25 hover:brightness-105',
       },
       size: {
         default: 'h-10 px-4 py-2',
-        sm: 'h-8 rounded-md px-3 text-xs',
+        sm: 'h-8 rounded-lg px-3 text-xs',
         lg: 'h-12 rounded-xl px-6 text-base',
         icon: 'h-9 w-9',
       },

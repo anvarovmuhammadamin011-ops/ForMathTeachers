@@ -33,8 +33,17 @@ export function AuthLayout({
   footer?: ReactNode;
 }) {
   return (
-    <div className="grid min-h-screen bg-white lg:grid-cols-[1.05fr_1fr]">
-      <div className="relative hidden overflow-hidden bg-[#0B1739] p-10 text-white lg:flex lg:flex-col xl:p-14">
+    <div className="relative grid min-h-screen overflow-hidden lg:grid-cols-[1.05fr_1fr]">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 -z-10 overflow-hidden lg:hidden"
+      >
+        <div className="absolute -left-24 -top-24 h-80 w-80 animate-float rounded-full bg-primary/20 blur-3xl" />
+        <div className="absolute -right-20 top-1/3 h-72 w-72 animate-drift rounded-full bg-violet-400/20 blur-3xl" />
+        <div className="absolute -bottom-24 left-1/4 h-72 w-72 animate-float rounded-full bg-cyan-300/20 blur-3xl [animation-delay:1.5s]" />
+      </div>
+
+      <div className="relative hidden overflow-hidden border-r border-white/10 bg-[#0B1739] p-10 text-white lg:flex lg:flex-col xl:p-14">
         <div className="pointer-events-none absolute inset-0 opacity-60">
           <div className="absolute -left-28 top-10 h-80 w-80 rounded-full bg-blue-600/30 blur-3xl" />
           <div className="absolute -right-24 bottom-0 h-96 w-96 rounded-full bg-indigo-500/20 blur-3xl" />
@@ -100,8 +109,8 @@ export function AuthLayout({
         <p className="relative text-xs text-blue-100/40">© {new Date().getFullYear()} MathTest AI</p>
       </div>
 
-      <div className="flex min-h-screen flex-col">
-        <div className="flex items-center justify-between border-b border-border px-5 py-4 lg:hidden">
+      <div className="flex min-h-screen flex-col bg-white/30 backdrop-blur-sm supports-[backdrop-filter]:bg-white/15">
+        <div className="flex items-center justify-between border-b border-white/50 bg-white/60 px-5 py-3.5 backdrop-blur-xl lg:hidden">
           <Link to="/" className="flex items-center gap-2.5">
             <LogoMark />
             <span className="font-display text-base font-extrabold tracking-tight text-foreground">
@@ -110,13 +119,15 @@ export function AuthLayout({
           </Link>
         </div>
 
-        <div className="flex flex-1 items-center justify-center px-5 py-8 sm:px-8">
+        <div className="flex flex-1 items-center justify-center px-4 py-7 sm:px-8">
           <div className="w-full max-w-[420px] animate-slide-up">
             <h2 className="text-balance font-display text-[26px] font-extrabold text-foreground sm:text-[30px]">
               {title}
             </h2>
             <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{subtitle}</p>
-            <div className="mt-7">{children}</div>
+            <div className="mt-6 rounded-2xl border border-white/70 bg-white/75 p-5 shadow-glass backdrop-blur-xl supports-[backdrop-filter]:bg-white/60 sm:p-6">
+              {children}
+            </div>
             {footer && <div className="mt-6 text-center text-sm text-muted-foreground">{footer}</div>}
           </div>
         </div>

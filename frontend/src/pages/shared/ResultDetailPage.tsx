@@ -223,7 +223,7 @@ export default function ResultDetailPage() {
           const statusVariant = unanswered ? 'warning' : question.isCorrect ? 'success' : 'danger';
           return (
             <Card key={question.id} className="overflow-hidden">
-              <CardHeader className="flex-row flex-wrap items-start justify-between gap-3 border-b border-border/70 pb-4">
+              <CardHeader className="flex-row flex-wrap items-start justify-between gap-3 border-b border-white/60 pb-4">
                 <div className="flex min-w-0 items-start gap-3">
                   <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-soft font-display text-sm font-bold text-primary-700">
                     {question.questionNumber}
@@ -274,7 +274,7 @@ export default function ResultDetailPage() {
                             ? 'border-success/40 bg-success-soft/50'
                             : isSelected
                               ? 'border-danger/40 bg-danger-soft/40'
-                              : 'border-border bg-white',
+                              : 'border-white/70 bg-white/70 backdrop-blur-md',
                         )}
                       >
                         <div className="flex items-start gap-2.5">
@@ -317,7 +317,7 @@ export default function ResultDetailPage() {
                   })}
                 </div>
 
-                <div className="rounded-xl bg-slate-50 p-4">
+                <div className="rounded-xl border border-white/60 bg-white/55 p-4 backdrop-blur-md">
                   <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
                     Yechim
                   </p>

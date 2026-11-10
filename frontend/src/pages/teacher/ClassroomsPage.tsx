@@ -126,7 +126,7 @@ export default function ClassroomsPage() {
                     type="button"
                     onClick={() => copyCode(classroom.joinCode)}
                     title="Kodni nusxalash"
-                    className="flex items-center gap-1.5 rounded-lg border border-border bg-muted px-2.5 py-1.5 font-mono text-xs font-bold tracking-wider text-slate-700 transition hover:border-primary/40 hover:bg-primary-50 hover:text-primary-700"
+                    className="flex items-center gap-1.5 rounded-lg border border-white/70 bg-white/70 px-2.5 py-1.5 font-mono text-xs font-bold tracking-wider text-slate-700 backdrop-blur-md transition hover:border-primary/40 hover:bg-primary-50/80 hover:text-primary-700"
                   >
                     {classroom.joinCode}
                     <Copy className="h-3.5 w-3.5" />

@@ -283,7 +283,7 @@ export default function TestReviewPage() {
                       'flex items-center gap-3 rounded-xl border p-3.5 transition',
                       isDone && 'border-success/25 bg-success-soft/50',
                       active && 'border-primary/30 bg-soft',
-                      !isDone && !active && 'border-border bg-white',
+                      !isDone && !active && 'border-white/70 bg-white/70 backdrop-blur-md',
                     )}
                   >
                     <div
@@ -468,7 +468,7 @@ export default function TestReviewPage() {
           const busy = busyId === question.id;
           return (
             <Card key={question.id} className="overflow-hidden">
-              <CardHeader className="flex-row flex-wrap items-start justify-between gap-3 border-b border-border/70 pb-4">
+              <CardHeader className="flex-row flex-wrap items-start justify-between gap-3 border-b border-white/60 pb-4">
                 <div className="flex min-w-0 items-start gap-3">
                   <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-soft font-display text-sm font-bold text-primary-700">
                     {question.questionNumber}
@@ -556,7 +556,7 @@ export default function TestReviewPage() {
                           'flex items-start gap-2.5 rounded-xl border px-3 py-2.5',
                           correct
                             ? 'border-success/40 bg-success-soft/50'
-                            : 'border-border bg-white',
+                            : 'border-white/70 bg-white/70 backdrop-blur-md',
                         )}
                       >
                         <span
@@ -574,7 +574,7 @@ export default function TestReviewPage() {
                   })}
                 </div>
 
-                <div className="rounded-xl bg-slate-50 p-4">
+                <div className="rounded-xl border border-white/60 bg-white/55 p-4 backdrop-blur-md">
                   <p className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide text-muted-foreground">
                     <BrainCircuit className="h-3.5 w-3.5" /> AI yechimi
                   </p>
@@ -730,7 +730,7 @@ export default function TestReviewPage() {
                 id="publish-classroom"
                 value={publishClassroom}
                 onChange={(event) => setPublishClassroom(event.target.value)}
-                className="h-11 w-full rounded-lg border border-input bg-white px-3.5 text-sm shadow-sm focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/10"
+                className="h-11 w-full rounded-xl border border-white/70 bg-white/80 px-3.5 text-sm shadow-[inset_0_1px_0_rgba(255,255,255,0.7)] backdrop-blur-md focus:border-primary/60 focus:bg-white focus:outline-none focus:ring-4 focus:ring-primary/15 supports-[backdrop-filter]:bg-white/55"
               >
                 {data.classrooms.map((classroom) => (
                   <option key={classroom.id} value={classroom.id}>

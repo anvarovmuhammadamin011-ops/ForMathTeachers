@@ -132,7 +132,7 @@ export default function StudentDashboardPage() {
               tests.map((test) => (
                 <div
                   key={test.id}
-                  className="flex flex-col gap-3 rounded-xl border border-border p-4 transition hover:border-primary/30 hover:bg-soft/20 sm:flex-row sm:items-center sm:justify-between"
+                  className="flex flex-col gap-3 rounded-xl border border-white/60 bg-white/45 p-4 backdrop-blur-md transition hover:border-primary/30 hover:bg-white/80 sm:flex-row sm:items-center sm:justify-between"
                 >
                   <div className="min-w-0">
                     <p className="truncate font-semibold text-foreground">{test.title}</p>
@@ -181,7 +181,7 @@ export default function StudentDashboardPage() {
           </CardHeader>
           <CardContent className="space-y-2.5 pt-4">
             {recentResults.length === 0 ? (
-              <div className="rounded-xl border border-dashed border-border p-6 text-center">
+              <div className="rounded-xl border border-dashed border-white/80 bg-white/40 p-6 text-center backdrop-blur-md">
                 <Trophy className="mx-auto h-8 w-8 text-slate-300" />
                 <p className="mt-2 text-sm font-medium">Natija hali yo‘q</p>
                 <p className="mt-1 text-xs text-muted-foreground">
@@ -193,7 +193,7 @@ export default function StudentDashboardPage() {
                 <Link
                   key={result.attemptId}
                   to={`/student/results/${result.attemptId}`}
-                  className="flex items-center justify-between gap-3 rounded-xl border border-border p-3 transition hover:border-primary/30 hover:bg-soft/30"
+                  className="flex items-center justify-between gap-3 rounded-xl border border-white/60 bg-white/45 p-3 backdrop-blur-md transition hover:border-primary/30 hover:bg-white/80"
                 >
                   <div className="min-w-0">
                     <p className="truncate text-sm font-semibold">{result.testTitle}</p>

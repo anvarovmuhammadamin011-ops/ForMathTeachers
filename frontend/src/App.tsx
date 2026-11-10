@@ -23,7 +23,7 @@ import NotFoundPage from '@/pages/NotFoundPage';
 
 function Splash() {
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center gap-5 bg-background">
+    <div className="flex min-h-screen flex-col items-center justify-center gap-5">
       <div className="animate-pulse-soft">
         <Brand />
       </div>

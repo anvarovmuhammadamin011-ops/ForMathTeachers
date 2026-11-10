@@ -2,17 +2,12 @@ import * as React from 'react';
 import * as LabelPrimitive from '@radix-ui/react-label';
 import { cn } from '@/lib/utils';
 
+const inputBase =
+  'flex h-11 w-full rounded-xl border border-white/70 bg-white/80 px-3.5 py-2 text-sm text-foreground shadow-[inset_0_1px_0_rgba(255,255,255,0.7)] backdrop-blur-md transition placeholder:text-muted-foreground/70 focus:border-primary/60 focus:bg-white focus:outline-none focus:ring-4 focus:ring-primary/15 disabled:cursor-not-allowed disabled:bg-muted disabled:opacity-70 supports-[backdrop-filter]:bg-white/55';
+
 const Input = React.forwardRef<HTMLInputElement, React.InputHTMLAttributes<HTMLInputElement>>(
   ({ className, type, ...props }, ref) => (
-    <input
-      type={type}
-      ref={ref}
-      className={cn(
-        'flex h-11 w-full rounded-lg border border-input bg-white px-3.5 py-2 text-sm text-foreground shadow-sm transition placeholder:text-muted-foreground/70 focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/10 disabled:cursor-not-allowed disabled:bg-muted disabled:opacity-70',
-        className,
-      )}
-      {...props}
-    />
+    <input type={type} ref={ref} className={cn(inputBase, className)} {...props} />
   ),
 );
 Input.displayName = 'Input';
@@ -23,10 +18,7 @@ const Textarea = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <textarea
     ref={ref}
-    className={cn(
-      'flex min-h-[96px] w-full rounded-lg border border-input bg-white px-3.5 py-2.5 text-sm text-foreground shadow-sm transition placeholder:text-muted-foreground/70 focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/10 disabled:cursor-not-allowed disabled:bg-muted disabled:opacity-70',
-      className,
-    )}
+    className={cn(inputBase, 'min-h-[96px] py-2.5', className)}
     {...props}
   />
 ));

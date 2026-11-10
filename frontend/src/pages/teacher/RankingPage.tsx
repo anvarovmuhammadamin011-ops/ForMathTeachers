@@ -87,7 +87,7 @@ export default function TeacherRankingPage() {
               'inline-flex items-center gap-2 rounded-xl border px-3.5 py-2 text-sm font-semibold transition',
               classroom.id === classroomId
                 ? 'border-primary bg-primary text-white shadow-sm shadow-primary/25'
-                : 'border-border bg-white text-muted-foreground hover:border-primary/40 hover:text-foreground',
+                : 'border-white/70 bg-white/70 text-muted-foreground backdrop-blur-md hover:border-primary/30 hover:bg-white/90 hover:text-foreground',
             )}
           >
             <School className="h-4 w-4" />

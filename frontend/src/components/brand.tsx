@@ -5,7 +5,7 @@ export function LogoMark({ className }: { className?: string }) {
   return (
     <div
       className={cn(
-        'relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary shadow-sm shadow-primary/30',
+        'relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-primary-500 via-primary-600 to-primary-700 shadow-glass-sm ring-1 ring-white/40',
         className,
       )}
     >

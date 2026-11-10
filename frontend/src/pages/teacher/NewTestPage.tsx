@@ -223,7 +223,7 @@ export default function NewTestPage() {
                   id="classroom"
                   value={classroomId}
                   onChange={(event) => setClassroomId(event.target.value)}
-                  className="h-11 w-full rounded-lg border border-input bg-white px-3.5 text-sm shadow-sm focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/10"
+                  className="h-11 w-full rounded-xl border border-white/70 bg-white/80 px-3.5 text-sm shadow-[inset_0_1px_0_rgba(255,255,255,0.7)] backdrop-blur-md focus:border-primary/60 focus:bg-white focus:outline-none focus:ring-4 focus:ring-primary/15 supports-[backdrop-filter]:bg-white/55"
                 >
                   {classrooms.map((classroom) => (
                     <option key={classroom.id} value={classroom.id}>
@@ -250,7 +250,7 @@ export default function NewTestPage() {
               </p>
               {file ? (
                 <div className="flex items-center gap-3 rounded-xl border border-primary/30 bg-soft/50 p-4">
-                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white text-primary shadow-sm">
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-white/70 bg-white/80 text-primary shadow-glass-sm backdrop-blur-md">
                     <FileText className="h-5 w-5" />
                   </div>
                   <div className="min-w-0 flex-1">
@@ -265,7 +265,7 @@ export default function NewTestPage() {
                       setFile(null);
                       if (inputRef.current) inputRef.current.value = '';
                     }}
-                    className="rounded-lg p-2 text-muted-foreground transition hover:bg-white hover:text-danger"
+                    className="rounded-lg p-2 text-muted-foreground transition hover:bg-white/90 hover:text-danger"
                     aria-label="Faylni olib tashlash"
                   >
                     <X className="h-4 w-4" />
@@ -282,7 +282,7 @@ export default function NewTestPage() {
                   className={`flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed px-5 py-9 text-center transition ${
                     dragging
                       ? 'border-primary bg-primary-50'
-                      : 'border-border bg-slate-50/60 hover:border-primary/50 hover:bg-soft/40'
+                      : 'border-white/70 bg-white/60 backdrop-blur-md hover:border-primary/40 hover:bg-white/85'
                   }`}
                 >
                   <input
@@ -292,7 +292,7 @@ export default function NewTestPage() {
                     className="sr-only"
                     onChange={(event) => pickFile(event.target.files?.[0] ?? null)}
                   />
-                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white text-primary shadow-sm">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-white/70 bg-white/80 text-primary shadow-glass-sm backdrop-blur-md">
                     <UploadCloud className="h-6 w-6" />
                   </div>
                   <p className="mt-3 text-sm font-semibold">

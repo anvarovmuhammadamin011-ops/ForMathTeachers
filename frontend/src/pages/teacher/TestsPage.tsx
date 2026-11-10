@@ -75,7 +75,7 @@ export default function TestsPage() {
         <select
           value={classroomFilter}
           onChange={(event) => setClassroomFilter(event.target.value)}
-          className="h-11 rounded-lg border border-input bg-white px-3.5 text-sm text-foreground shadow-sm focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/10 sm:w-56"
+          className="h-11 rounded-xl border border-white/70 bg-white/80 px-3.5 text-sm text-foreground shadow-[inset_0_1px_0_rgba(255,255,255,0.7)] backdrop-blur-md focus:border-primary/60 focus:bg-white focus:outline-none focus:ring-4 focus:ring-primary/15 supports-[backdrop-filter]:bg-white/55 sm:w-56"
         >
           <option value="all">Barcha sinflar</option>
           {classrooms.map((classroom) => (
