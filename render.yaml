@@ -1,10 +1,23 @@
-# MathTest AI — Render blueprint
+# MathTest AI — Render blueprint (bepul web service)
 #
-# Render dashboard'da: New + -> Blueprint -> shu repo'ni tanlang.
-# Barcha `sync: false` qiymatlar deploy vaqtida dashboard'da kiritiladi.
+# Deploy: New + -> Blueprint -> repo'ni tanlang, yoki bir bosishda:
+#   https://render.com/deploy?repo=https://github.com/anvarovmuhammadamin011-ops/ForMathTeachers
 #
-# Eslatma: free tarif 15 daqiqa harakatsizlikdan keyin uxlaydi (cold start ~50 s).
-# Doimiy uyg'oq turishi uchun pullik instans yoki tashqi ping (cron) kerak.
+# Bitta servis ham API, ham frontend'ni tarqatadi: backend `frontend/dist` ni
+# o'zi serve qiladi, shuning uchun alohida statik hosting shart emas.
+#
+# Build vaqtida hammasi avtomatik bajariladi:
+#   1) dependencylar (dev bilan — build/seed uchun kerak)
+#   2) Prisma client
+#   3) backend + frontend build
+#   4) `db:push` — sxema va indekslarni Atlas'ga qo'llash
+#   5) `seed` — demo o'qituvchi/o'quvchi/sinf/testni yaratish (idempotent)
+#
+# Shuning uchun boshqa qurilmada ham `npm run seed` qo'lda bajarish shart emas:
+# har deploy'da baza avtomatik tayyorlanadi.
+#
+# Eslatma: free instans 15 daqiqa harakatsizlikdan keyin uxlaydi (cold start ~50 s).
+# Uni uyg'oq tutish uchun `.github/workflows/keep-alive.yml` dan foydalaning.
 
 services:
   - type: web
@@ -12,34 +25,31 @@ services:
     runtime: node
     plan: free
     region: frankfurt
-    buildCommand: npm ci --include=dev && npm run db:generate && npm run build -w backend
+    buildCommand: npm ci --include=dev && npm run db:generate && npm run build && npm run db:push && npm run seed
     startCommand: npm start -w backend
     healthCheckPath: /api/health
     autoDeployTrigger: commit
     envVars:
       - key: NODE_ENV
         value: production
-      # MongoDB Atlas connection string (mongodb+srv://...)
+      # MongoDB Atlas connection string (mongodb+srv://...).
+      # Atlas -> Network Access'da 0.0.0.0/0 ruxsat bering (Render IP'lari dinamik).
       - key: MONGODB_URI
         sync: false
       # Kamida 32 belgi. Render avtomatik generatsiya qiladi.
       - key: SESSION_SECRET
         generateValue: true
-      # Frontend manzili (masalan https://your-frontend.onrender.com).
-      # Bo'sh qolsa faqat same-origin so'rovlar qabul qilinadi.
-      - key: CLIENT_ORIGIN
-        sync: false
       # AI kaliti bo'lmasa PDF konvertatsiyasi 503 AI_NOT_CONFIGURED qaytaradi.
+      # Groq bepul kaliti: https://console.groq.com/keys
       - key: AI_API_KEY
         sync: false
       - key: AI_BASE_URL
-        value: https://api.openai.com/v1
+        value: https://api.groq.com/openai/v1
       - key: AI_MODEL
-        value: gpt-4o
-      - key: AI_VISION_MODEL
-        sync: false
+        value: qwen/qwen3.8-27b
+      # Groq'da hozircha vision model yo'q — rasmlar yuborilmaydi, OCR matni ishlatiladi.
       - key: AI_SEND_PAGE_IMAGES
-        value: "true"
+        value: "false"
       - key: AI_TIMEOUT_MS
         value: "180000"
       - key: OCR_ENABLED
@@ -48,3 +58,7 @@ services:
         value: eng
       - key: MAX_PDF_MB
         value: "30"
+      # Lokal dev uchun mo'ljallangan mongodb-memory-server build vaqtida
+      # MongoDB binary'sini yuklab olmasin.
+      - key: MONGOMS_DISABLE_POSTINSTALL
+        value: "1"

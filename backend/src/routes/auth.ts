@@ -15,6 +15,8 @@ import {
   sessionCookieOptions,
   generateJoinCode,
   getUserSessions,
+  updateProfile,
+  changePassword,
 } from '../services/authService.js';
 
 export const authRouter = Router();
@@ -105,5 +107,43 @@ authRouter.get(
         teacherName: `${membership.classroom.teacher.firstName} ${membership.classroom.teacher.lastName}`,
       })),
     });
+  }),
+);
+
+authRouter.patch(
+  '/me/profile',
+  requireAuth,
+  asyncHandler(async (req, res) => {
+    const body = parseBody(
+      z.object({
+        firstName: z.string().trim().min(1).optional(),
+        lastName: z.string().trim().min(1).optional(),
+        username: z.string().trim().min(1).optional(),
+        schoolName: z.union([z.string(), z.literal(null)]).optional(),
+      }),
+      req.body,
+    );
+    const updated = await updateProfile(req.auth!.userId, body);
+    res.json({ user: publicUser(updated) });
+  }),
+);
+
+authRouter.post(
+  '/me/change-password',
+  requireAuth,
+  asyncHandler(async (req, res) => {
+    const body = parseBody(
+      z.object({
+        currentPassword: z.string().trim().min(1, 'Joriy parolni kiriting.'),
+        newPassword: z
+          .string()
+          .trim()
+          .min(8, 'Yangi parol kamida 8 belgidan iborat bo‘lishi kerak.')
+          .min(1, 'Yangi parolni kiriting.'),
+      }),
+      req.body,
+    );
+    await changePassword(req.auth!.userId, body.currentPassword, body.newPassword);
+    res.json({ ok: true });
   }),
 );

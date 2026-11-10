@@ -1,6 +1,7 @@
 import crypto from 'node:crypto';
 import fs from 'node:fs/promises';
 import { loadImage, createCanvas } from '@napi-rs/canvas';
+import { config } from '../../config.js';
 import { chatCompletion, extractJsonObject, type ChatMessage } from './client.js';
 import {
   EXTRACTION_SYSTEM,
@@ -76,6 +77,8 @@ async function extractChunk(
     text: page.text,
     hint: page.needsVision ? page.ocrText : '',
   }));
+  const attachImages =
+    sendImages && chunk.some((page) => page.imagePath && (page.needsVision || page.hasImages));
   const content: Array<
     { type: 'text'; text: string } | { type: 'image_url'; image_url: { url: string; detail: 'high' } }
   > = [
@@ -118,7 +121,8 @@ async function extractChunk(
 
   const raw = await chatCompletion({
     messages,
-    model: sendImages ? undefined : undefined,
+    // Rasm yuborilganda AI_VISION_MODEL (bo'sh bo'lsa asosiy model) ishlatiladi.
+    model: attachImages ? config.ai.visionModel : undefined,
     json: true,
   });
   const parsed = extractJsonObject<{ questions?: unknown[] }>(raw);
@@ -268,6 +272,7 @@ export async function generateOptions(input: {
       { role: 'system', content: OPTIONS_SYSTEM },
       { role: 'user', content },
     ],
+    model: input.imagePath ? config.ai.visionModel : undefined,
     json: true,
     temperature: 0.4,
   });

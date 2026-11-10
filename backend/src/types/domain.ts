@@ -6,6 +6,18 @@
 
 export type Role = 'TEACHER' | 'STUDENT';
 
+export interface ChangePasswordPayload {
+  currentPassword: string;
+  newPassword: string;
+}
+
+export interface UpdateProfilePayload {
+  firstName?: string;
+  lastName?: string;
+  username?: string;
+  schoolName?: string | null;
+}
+
 export type TestStatus = 'DRAFT' | 'PROCESSING' | 'READY' | 'PUBLISHED';
 
 export type VerificationStatus = 'VERIFIED' | 'NEEDS_REVIEW';

@@ -162,7 +162,8 @@ export async function processJob(jobId: string): Promise<void> {
             questionText: question.questionText,
             solution,
             correctAnswer: question.finalAnswer,
-            imagePath: pageImage,
+            // Vision qo'llab-quvvatlanmasa (masalan Groq) rasm yubormaymiz.
+            imagePath: config.sendPageImages ? pageImage : null,
           });
           const regeneratedCheck = validateOptions(
             regenerated.options,

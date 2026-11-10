@@ -9,6 +9,13 @@ export interface User {
   schoolName: string | null;
 }
 
+export interface UpdateProfilePayload {
+  firstName?: string;
+  lastName?: string;
+  username?: string;
+  schoolName?: string | null;
+}
+
 export interface StudentClassroom {
   id: string;
   name: string;

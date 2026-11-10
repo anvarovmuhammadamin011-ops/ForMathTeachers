@@ -40,25 +40,26 @@ Copy-Item backend\.env.example backend\.env
 #    macOS/Linux:
 # cp backend/.env.example backend/.env
 
-# 3. MongoDB Atlas’da bepul M0 cluster yarating:
-#    https://cloud.mongodb.com -> Create -> M0 Free
-#    Database Access: foydalanuvchi/parol
-#    Network Access: o‘z IP manzilingizni qo‘shing
-#    Connect -> Drivers -> connection string’ni backend/.env dagi
-#    MONGODB_URI ga qo‘ying.
-#    Shuningdek SESSION_SECRET ni almashtiring (production uchun albatta).
+# 3. Sxema, indekslarni qo‘llash va demo ma’lumotlarni yuklash
+npm run setup
 
-# 4. Sxema va indekslarni MongoDB’ga qo‘llash
-npm run db:push
-
-# 5. Demo ma’lumotlarni yuklash (ixtiyoriy, lekin tavsiya etiladi)
-npm run seed
-
-# 6. Backend va frontendni ishga tushirish
+# 4. MongoDB + backend + frontendni birga ishga tushirish
 npm run dev
 ```
 
-`npm run dev` bir vaqtda backend va frontendni ishga tushiradi. MongoDB Atlas tashqi xizmat bo‘lgani uchun alohida lokal baza jarayoni yo‘q. Backend bazaga ulanishni kutadi va ulanish paydo bo‘lgach fon vazifalarini boshlaydi.
+`npm run dev` **uchta** jarayonni bir vaqtda ishga tushiradi:
+
+| Jarayon | Port | Vazifasi |
+|---|---|---|
+| MongoDB (lokal) | `27017` | `mongodb-memory-server` replica set (`rs0`), data `.mongo-dev-data/` da saqlanadi |
+| Backend | `4000` | Express API (`tsx watch`) |
+| Frontend | `5173` | Vite dev server, `/api` ni 4000 ga proxy qiladi |
+
+Lokal MongoDB avtomatik boshlanadi — alohida sozlash shart emas. Port band bo‘lsa (masalan, MongoDB allaqachan ishlayapti) skript uni qayta ishga tushirmaydi va backend mavjud bazaga ulanadi. Backend bazaga ulanmaguncha kutadi va ulanish paydo bo‘lgach fon vazifalarini boshlaydi.
+
+**MongoDB Atlas ishlatish uchun** `backend/.env` dagi `MONGODB_URI` ni Atlas connection string bilan almashtiring — shunda lokal MongoDB ishga tushmaydi va backend Atlas’ga ulanadi. Atlas’da: <https://cloud.mongodb.com> → Create → M0 Free → Database Access (foydalanuvchi/parol) → Network Access (IP) → Connect → Drivers.
+
+`npm run setup` = `npm install` + `db:push` + `seed` (bitta buyruq bilan to‘liq o‘rnatish).
 
 Manzillar:
 
@@ -126,6 +127,17 @@ AI_MODEL="openai/gpt-4o"
 AI_VISION_MODEL="openai/gpt-4o"
 ```
 
+Groq orqali (bepul tarif mavjud):
+
+```env
+AI_API_KEY="gsk_..."
+AI_BASE_URL="https://api.groq.com/openai/v1"
+AI_MODEL="qwen/qwen3.8-27b"
+AI_SEND_PAGE_IMAGES=false
+```
+
+Groq’da hozircha vision model yo‘q, shuning uchun sahifa rasmlari yuborilmaydi (`AI_SEND_PAGE_IMAGES=false`) va skanerlangan sahifalar Tesseract OCR matni orqali o‘qiladi. Bepul tarifda token limiti daqiqasiga 8000 — katta PDF bir necha daqiqada qayta ishlanadi, chunki server 429 javoblarini `Retry-After` asosida kutib qayta urinadi.
+
 ---
 
 ## Ish oqimi
@@ -184,10 +196,12 @@ Reyting qoidalari:
 
 | Buyruq | Vazifasi |
 |---|---|
-| `npm run dev` | Backend + frontend (birgalikda) |
+| `npm run dev` | MongoDB + backend + frontend (birgalikda) |
+| `npm run setup` | `npm install` + `db:push` + `seed` (to‘liq o‘rnatish) |
+| `npm run dev:mongo` | Faqat lokal MongoDB (27017) ni ishga tushirish |
 | `npm run dev:backend` | Faqat backendni ishga tushirish |
 | `npm run dev:frontend` | Faqat frontendni ishga tushirish |
-| `npm run db:push` | Prisma sxema va indekslarni MongoDB Atlas’ga qo‘llash |
+| `npm run db:push` | Prisma sxema va indekslarni bazaga qo‘llash (lokal yoki Atlas) |
 | `npm run db:generate` | Prisma Client’ni qayta generatsiya qilish |
 | `npm run db:studio` | Prisma Studio |
 | `npm run seed` | Demo o‘qituvchi, o‘quvchilar, sinf va demo test |
@@ -195,8 +209,28 @@ Reyting qoidalari:
 | `npm run typecheck` | Backend va frontend TypeScript tekshiruvi |
 | `npm run build` | Backend (`backend/dist/`) va frontend (`frontend/dist/`) production build |
 | `npm start` | Build qilingan backendni ishga tushirish |
+| `npm run serve` | Supervisor: MongoDB + build qilingan backend (tunnelsiz) |
+| `npm run serve:tunnel` | Supervisor + Cloudflare public URL |
+| `npm run autostart:install` | Windows loginida serverni avtomatik fon rejimida ishga tushirish |
+| `npm run autostart:remove` | Avtomatik boshlanishni o‘chirish va serverni to‘xtatish |
 
 `npm run e2e` real MongoDB bazada izolyatsiyalangan ma’lumot yaratadi va oxirida ularni o‘chiradi. U quyidagilarni tekshiradi: health, autentifikatsiya, RBAC, testni boshlash, javoblarni avtosaqlash, baholash, yashirin javoblar, natija huquqlari, vaqt tugashi bilan avtomatik topshirish, test va umumiy reyting (teng ball / tezroq vaqt / bir xil o‘rin).
+
+### Doimiy (fon) rejim
+
+`npm run autostart:install` quyidagilarni bajaradi:
+
+- `Startup\MathTestAI.vbs` faylini yaratadi — Windows’ga **login bo‘lganda** server fonda avtomatik boshlanadi;
+- hozir ham serverni darhol ishga tushiradi (`scripts/start-hidden.ps1` → `scripts/serve.mjs --tunnel`);
+- supervisor MongoDB, build qilingan backend va Cloudflare tunnel’ni boshqaradi: biri to‘xtasa **avtomatik qayta ishga tushadi**, log `logs/server.log` ga yoziladi;
+- public URL har restartdan keyin yangilanadi va `.public-url.txt` fayliga yoziladi.
+
+Muhim:
+
+- Doimiy rejim `backend/dist` ni ishga tushiradi — **kod o‘zgarishidan keyin `npm run build` bajarish kerak** (aksi holda eski build ishlaydi).
+- Bu rejimda `npm run dev` ishlatilmaydi (port 4000 band bo‘ladi). Dev rejimiga o‘tish uchun avval `npm run autostart:remove` bajaring.
+- Server faqat Windows **loginidan** keyin boshlanadi; kompyuter login’siz qayta ishga tushsa, server ham ishga tushmaydi.
+- O‘chirish: `npm run autostart:remove`.
 
 ---
 
@@ -206,31 +240,43 @@ Reyting qoidalari:
 2. `NODE_ENV=production`, kamida 32 belgili `SESSION_SECRET`, to‘g‘ri `CLIENT_ORIGIN` ni o‘rnating.
 3. `npm install && npm run build`
 4. `npm run db:push`
-5. `npm start`
+5. `npm run seed` — demo o‘qituvchi/o‘quvchi/sinf/test (idempotent)
+6. `npm start`
 
-### Render (backend)
+### Render (bepul server)
 
-Repo ildizidagi `render.yaml` Render blueprint’i hisoblanadi. Dashboard’da **New + → Blueprint** qilib repo’ni tanlash kifoya — build, start va health check avtomatik sozlanadi.
+Repo ildizidagi `render.yaml` — Render blueprint. U **bitta web service** yaratadi: backend ham API, ham `frontend/dist` ni tarqatadi, shuning uchun alohida statik hosting shart emas.
 
-Bir bosishda: **<https://render.com/deploy?repo=https://github.com/anvarovmuhammadamin011-ops/ForMathTeachers>** — GitHub bilan kirib, `MONGODB_URI` va `AI_API_KEY` kiritiladi.
+Bir bosishda deploy: **<https://render.com/deploy?repo=https://github.com/anvarovmuhammadamin011-ops/ForMathTeachers>**
+
+Deploy vaqtida kiritiladigan qiymatlar:
+
+| O‘zgaruvchi | Qiymat |
+|---|---|
+| `MONGODB_URI` | MongoDB Atlas connection string (`mongodb+srv://...`) |
+| `AI_API_KEY` | Groq kaliti (`gsk_...`) |
+| `CLIENT_ORIGIN` | ixtiyoriy — faqat frontend alohida domenda bo‘lsa |
+
+`SESSION_SECRET` Render tomonidan avtomatik generatsiya qilinadi.
+
+**Muhim:** Atlas → **Network Access** bo‘limida `0.0.0.0/0` (Allow access from anywhere) qo‘shing — Render IP manzillari dinamik, aks holda build vaqtidagi `db:push`/`seed` bazaga ulanmaydi.
+
+Build command (blueprint’da avtomatik):
+
+```bash
+npm ci --include=dev && npm run db:generate && npm run build && npm run db:push && npm run seed
+```
+
+Ya’ni **`db:push` va `seed` har deploy’da avtomatik bajariladi** — demo o‘qituvchi, o‘quvchilar, sinf va test bazada doim mavjud bo‘ladi. Boshqa qurilmada `npm run seed` qo‘lda bajarish shart emas. `seed` idempotent (upsert), lekin eski sessiyalarni tozalaydi — deploy’dan keyin foydalanuvchilar qayta login qiladi.
 
 Qo‘lda Web Service yaratilsa:
 
 | Sozlama | Qiymat |
 |---|---|
 | Root Directory | bo‘sh (repo ildizi) |
-| Build Command | `npm ci --include=dev && npm run db:generate && npm run build -w backend` |
+| Build Command | yuqoridagi build command |
 | Start Command | `npm start -w backend` |
 | Health Check Path | `/api/health` |
-
-Kerakli muhit o‘zgaruvchilari: `MONGODB_URI`, `SESSION_SECRET` (32+ belgi), `CLIENT_ORIGIN`; `AI_API_KEY` PDF konvertatsiyasi uchun.
-
-Sxemani bir marta qo‘llash (Render Shell bo‘lmasa, lokal `backend/.env` bilan):
-
-```bash
-npm run db:push
-npm run seed   # ixtiyoriy: demo o‘qituvchi/o‘quvchilar
-```
 
 ### Keep-alive (free instans uxlamasligi uchun)
 

@@ -10,6 +10,14 @@ coverage/
 
 # Loglar
 *.log
+logs/
+
+# Lokal MongoDB dev bazasi (tmp-mongo-dev.mjs)
+.mongo-dev-data/
+
+# Lokal tunnel vositasi (cloudflared.exe) va tunnel manzili
+tools/
+.public-url.txt
 
 # OS fayllari
 .DS_Store

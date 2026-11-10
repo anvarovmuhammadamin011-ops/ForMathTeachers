@@ -10,12 +10,14 @@ import {
   Plus,
   School,
   Trophy,
+  User,
   X,
 } from 'lucide-react';
 import { Brand } from '@/components/brand';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/lib/auth';
 import { cn, fullName, initials } from '@/lib/utils';
+import { ProfileDialog } from '@/components/profile-dialog';
 
 const teacherNav = [
   { to: '/teacher', label: 'Dashboard', icon: LayoutDashboard, end: true },
@@ -35,6 +37,7 @@ const studentNav = [
 function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const [profileOpen, setProfileOpen] = useState(false);
   const location = useLocation();
   const nav = user?.role === 'TEACHER' ? teacherNav : studentNav;
 
@@ -109,7 +112,11 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
       </div>
 
       <div className="border-t border-border p-3">
-        <div className="flex items-center gap-3 rounded-xl px-2 py-2">
+        <button
+          type="button"
+          onClick={() => setProfileOpen(true)}
+          className="flex w-full items-center gap-3 rounded-xl px-2 py-2 text-left transition hover:bg-soft/60"
+        >
           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary-50 text-xs font-bold text-primary-700">
             {initials(user)}
           </div>
@@ -117,20 +124,18 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
             <p className="truncate text-sm font-semibold text-foreground">{fullName(user)}</p>
             <p className="truncate text-xs text-muted-foreground">@{user.username}</p>
           </div>
-          <button
-            type="button"
-            title="Chiqish"
-            aria-label="Chiqish"
-            onClick={async () => {
-              await logout();
-              navigate('/kirish');
-            }}
-            className="rounded-lg p-2 text-muted-foreground transition hover:bg-danger-soft hover:text-danger"
-          >
-            <LogOut className="h-4 w-4" />
-          </button>
-        </div>
+          <LogOut className="h-4 w-4 shrink-0 text-muted-foreground transition hover:text-danger" />
+        </button>
       </div>
+
+      <ProfileDialog
+        open={profileOpen}
+        onOpenChange={setProfileOpen}
+        onLogout={async () => {
+          await logout();
+          navigate('/kirish');
+        }}
+      />
     </div>
   );
 }

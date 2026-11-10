@@ -8,7 +8,7 @@ import {
   type ReactNode,
 } from 'react';
 import { api, onAuthExpired } from '@/lib/api';
-import type { Role, StudentClassroom, User } from '@/lib/types';
+import type { Role, StudentClassroom, UpdateProfilePayload, User } from '@/lib/types';
 
 interface AuthResponse {
   user: User;
@@ -21,6 +21,8 @@ interface AuthContextValue {
   loading: boolean;
   login: (username: string, password: string) => Promise<User>;
   logout: () => Promise<void>;
+  updateProfile: (payload: UpdateProfilePayload) => Promise<User>;
+  changePassword: (currentPassword: string, newPassword: string) => Promise<void>;
   refresh: () => Promise<void>;
 }
 
@@ -77,6 +79,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  const updateProfile = useCallback(
+    async (payload: UpdateProfilePayload) => {
+      const data = await api<{ user: User }>('/api/auth/me/profile', {
+        method: 'PATCH',
+        body: JSON.stringify(payload),
+      });
+      setUser(data.user);
+      return data.user;
+    },
+    [],
+  );
+
+  const changePassword = useCallback(async (currentPassword: string, newPassword: string) => {
+    await api<{ ok: true }>('/api/auth/me/change-password', {
+      method: 'POST',
+      body: JSON.stringify({ currentPassword, newPassword }),
+    });
+  }, []);
+
   const value = useMemo<AuthContextValue>(
     () => ({
       user,
@@ -84,9 +105,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       loading,
       login,
       logout,
+      updateProfile,
+      changePassword,
       refresh: loadMe,
     }),
-    [user, classrooms, loading, login, logout, loadMe],
+    [user, classrooms, loading, login, logout, updateProfile, changePassword, loadMe],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

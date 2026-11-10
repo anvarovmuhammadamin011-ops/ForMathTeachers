@@ -3,7 +3,7 @@ import bcrypt from 'bcryptjs';
 import type { Role } from '../types/domain.js';
 import { prisma } from '../db.js';
 import { config } from '../config.js';
-import { ApiError, conflict } from '../lib/errors.js';
+import { ApiError, conflict, unauthorized } from '../lib/errors.js';
 
 export function hashToken(token: string): string {
   return crypto.createHmac('sha256', config.sessionSecret).update(token).digest('hex');
@@ -62,6 +62,42 @@ export function publicUser(user: {
     role: user.role,
     schoolName: user.schoolName,
   };
+}
+
+export async function updateProfile(userId: string, payload: Record<string, unknown>) {
+  const { firstName, lastName, username, schoolName } = payload as {
+    firstName?: string;
+    lastName?: string;
+    username?: string;
+    schoolName?: string | null;
+  };
+  if (username) {
+    const normalized = normalizeUsername(username);
+    const existing = await prisma.user.findUnique({ where: { username: normalized } });
+    if (existing && existing.id !== userId) throw conflict('Bu username allaqachon band.');
+  }
+  return prisma.user.update({
+    where: { id: userId },
+    data: {
+      ...(firstName !== undefined ? { firstName } : {}),
+      ...(lastName !== undefined ? { lastName } : {}),
+      ...(username !== undefined ? { username: normalizeUsername(username) } : {}),
+      ...(schoolName !== undefined ? { schoolName } : {}),
+    },
+  });
+}
+
+export async function changePassword(userId: string, currentPassword: string, newPassword: string) {
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+  if (!user) throw unauthorized('Foydalanuvchi topilmadi.');
+  const valid = await verifyPassword(currentPassword, user.passwordHash);
+  if (!valid) throw new ApiError(401, 'INVALID_CREDENTIALS', 'Joriy parol noto‘g‘ri.');
+  if (newPassword.trim().length < 8) throw new ApiError(400, 'BAD_REQUEST', 'Yangi parol kamida 8 belgidan iborat bo‘lishi kerak.');
+  await prisma.user.update({
+    where: { id: userId },
+    data: { passwordHash: await hashPassword(newPassword) },
+  });
+  return { ok: true };
 }
 
 export function generateJoinCode(): string {

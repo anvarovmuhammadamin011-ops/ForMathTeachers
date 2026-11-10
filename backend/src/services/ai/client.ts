@@ -37,9 +37,28 @@ export function assertAiConfigured() {
 type FetchLikeResponse = {
   ok: boolean;
   status: number;
+  headers: { get(name: string): string | null };
   text: () => Promise<string>;
   json: () => Promise<unknown>;
 };
+
+class AiRequestError extends ApiError {
+  retryAfterMs: number;
+
+  constructor(status: number, code: string, message: string, retryAfterMs = 0) {
+    super(status, code, message);
+    this.retryAfterMs = retryAfterMs;
+  }
+}
+
+function parseRetryAfter(value: string | null): number {
+  if (!value) return 0;
+  const seconds = Number(value);
+  if (Number.isFinite(seconds) && seconds > 0) return Math.min(seconds, 120) * 1000;
+  const date = Date.parse(value);
+  if (Number.isFinite(date)) return Math.max(0, Math.min(date - Date.now(), 120_000));
+  return 0;
+}
 
 async function callOnce(options: ChatOptions): Promise<string> {
   const controller = new AbortController();
@@ -79,15 +98,20 @@ async function callOnce(options: ChatOptions): Promise<string> {
     if (!response.ok) {
       let detail = raw.slice(0, 500);
       try {
-        const parsed = JSON.parse(raw) as { error?: { message?: string } };
+        const parsed = JSON.parse(raw) as { error?: { message?: string; code?: string; type?: string } };
         if (parsed.error?.message) detail = parsed.error.message;
+        if (parsed.error?.code) detail = parsed.error.code;
+        if (parsed.error?.type) detail = parsed.error.type;
       } catch {
         /* ignore */
       }
-      throw new ApiError(
-        502,
+      const retryAfterMs =
+        response.status === 429 ? parseRetryAfter(response.headers.get('retry-after')) : 0;
+      throw new AiRequestError(
+        response.status === 429 ? 429 : 502,
         'AI_API_ERROR',
         `AI xizmati xato qaytardi (${response.status}): ${detail}`,
+        retryAfterMs,
       );
     }
 
@@ -111,16 +135,26 @@ async function callOnce(options: ChatOptions): Promise<string> {
 
 export async function chatCompletion(options: ChatOptions): Promise<string> {
   assertAiConfigured();
+  const maxAttempts = 5;
   let lastError: unknown;
-  for (let attempt = 0; attempt < 3; attempt += 1) {
+  for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
     try {
       return await callOnce(options);
     } catch (error) {
       lastError = error;
       const status = error instanceof ApiError ? error.status : 500;
       const retryable = status === 429 || status === 502 || status === 503 || status === 504;
-      if (!retryable || attempt === 2) throw error;
-      await new Promise((resolve) => setTimeout(resolve, 1200 * (attempt + 1)));
+      if (!retryable || attempt === maxAttempts - 1) throw error;
+      // Provayder 429 qaytarsa `Retry-After` ni hurmat qilamiz (Groq bepul
+      // tarifida daqiqasiga token limiti tez-tez tugaydi). Aks holda
+      // eksponensial kutamiz: 3s, 6s, 12s, 24s.
+      const retryAfterMs =
+        error instanceof AiRequestError ? error.retryAfterMs : 0;
+      const waitMs =
+        retryAfterMs > 0
+          ? retryAfterMs + 500
+          : Math.min(3000 * 2 ** attempt, 30_000);
+      await new Promise((resolve) => setTimeout(resolve, waitMs));
     }
   }
   throw lastError;
